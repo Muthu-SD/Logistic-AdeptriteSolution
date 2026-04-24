@@ -1,17 +1,24 @@
-import React from "react";
 import { Navigate } from "react-router-dom";
 import useStore from "../store/UseStore";
 
-const ProtectedRoute = ({ element, requiredRole  }) => {
-  const { token, user } = useStore();
+const ProtectedRoute = ({ element,  roles = []   }) => {
+  const { user,isAuthenticated } = useStore();
 
-  if (!token || !user) {
+    // Not logged in
+  if (!isAuthenticated()) {
     return <Navigate to="/login" replace />;
   }
 
-  if (requiredRole && user.role !== requiredRole) {
-    return <Navigate to="/" replace />;
+  if (!user?.role) {
+    return <Navigate to="/login" replace />;
   }
+
+  // Role-based protection (optional)
+  if (roles.length && !roles.includes(user?.role)) {
+    console.warn("Access denied for role:", user.role);
+    return <Navigate to="/login" replace />;
+  }
+  
   return element;
 };
 

@@ -1,4 +1,3 @@
-import React from "react";
 import { Col, Row } from "antd";
 import InfoCard from "../../components/InfoCard";
 import CustomsClearanceLeadTimeChart from "../../components/chart_component/customs_clearance_lead_time_chart/CustomsClearanceLeadTimeChart";
@@ -14,25 +13,25 @@ const Dashboard = () => {
 
   return (
     <>
-      <div style={{ padding: "10px" }}>
+      <div className="dashboard-container">
         <Row gutter={[10, 10]}>
 
           {/* Clearance lead time  */}
-          <Col span={8}>
+          <Col xs={24} sm={24} md={12} lg={8} xl={8}>
             <InfoCard>
               <CustomsClearanceLeadTimeChart />
             </InfoCard>
           </Col>
 
           {/* Transit lead time  */}
-          <Col span={10}>
+          <Col xs={24} sm={24} md={12} lg={10} xl={10}>
             <InfoCard>
               <TransitLeadTimeChart />
             </InfoCard>
           </Col>
 
           {/* Outstanding Overdue Table Data */}
-          <Col span={6}>
+          <Col xs={24} sm={24} md={24} lg={6} xl={6}>
             <InfoCard >
               <OutstandingOverdueTable />
             </InfoCard>
@@ -41,44 +40,33 @@ const Dashboard = () => {
           {/* Main content area */}
           <Col span={24}>
             <Row gutter={[10, 10]}>
-              {/* Left: 3 small cards + Shipment In Pipeline */}
-              <Col span={16}>
-                <Row gutter={[10, 10]}>
-
-                  {/*Supplier Data */}
-                  <Col span={6}>
-                    <InfoCard>
-                      <SupplierWiseVolumeChart />
-                    </InfoCard>
-                  </Col>
-
-                  {/* Country Data */}
-                  <Col span={6}>
-                    <InfoCard>
-                      <CountryWiseVolumeChart />
-                    </InfoCard>
-                  </Col>
-
-                  {/* Total Shipment Handled Data */}
-                  <Col span={12}>
-                    <InfoCard>
-                      <TotalShipmentsHandledChart />
-                    </InfoCard>
-                  </Col>
-
-                  {/* Shipment In Pipeline Table Data */}
-                  <Col span={24}>
-                    <InfoCard>
-                      <ShipmentInPipelineTable />
-                    </InfoCard>
-                  </Col>
-                </Row>
+              {/* Four cards in one row */}
+              <Col xs={24} sm={12} md={12} lg={4} xl={4}>
+                <InfoCard>
+                  <SupplierWiseVolumeChart />
+                </InfoCard>
               </Col>
-
-              {/* Right: Shipment Under Clearance fills full height */}
-              <Col span={8} >
-                <InfoCard minHeight="390px">
+              <Col xs={24} sm={12} md={12} lg={4} xl={4}>
+                <InfoCard>
+                  <CountryWiseVolumeChart />
+                </InfoCard>
+              </Col>
+              <Col xs={24} sm={24} md={12} lg={8} xl={8}>
+                <InfoCard>
+                  <TotalShipmentsHandledChart />
+                </InfoCard>
+              </Col>
+              <Col xs={24} sm={24} md={12} lg={8} xl={8}>
+                <InfoCard>
                   <ShipmentUnderClearanceTable />
+                </InfoCard>
+              </Col>
+            </Row>
+            <Row gutter={[10, 10]} style={{ marginTop: 10 }}>
+              {/* Shipment In Pipeline takes full width */}
+              <Col span={24}>
+                <InfoCard>
+                  <ShipmentInPipelineTable />
                 </InfoCard>
               </Col>
             </Row>

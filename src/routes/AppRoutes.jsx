@@ -1,61 +1,45 @@
-import React, { Suspense, lazy } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Suspense, lazy } from "react";
+import { Route, Routes, Navigate } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
 import MainLayout from "../layouts/MainLayout";
 import useStore from "../store/UseStore";
 import ForgotPassword from "../auth/ForgotPassword";
 import ResetPassword from "../auth/ResetPassword.jsx";
-import SignUp from "../auth/SignUp.jsx";
 import OtpVerification from "../auth/OtpVerification.jsx";
 
 // Lazy loading components
 const Login = lazy(() => import("../auth/Login"));
-// const Dashboard = lazy(() => import("../pages/dashboard/Dashboard"));
 
 const AppRoutes = () => {
-  const { user } = useStore();
+  const { isAuthenticated } = useStore();
   return (
 
     <Routes>
+      {/* =========================
+          PUBLIC ROUTES
+      ========================= */}
 
-      {/* Protected route for authenticated users */}
-      <Route
-        path="/"
-        element={
-          <Suspense fallback={<div>Loading Main Layout...</div>}>
-            <ProtectedRoute element={<MainLayout />} />
-          </Suspense>
-        }
-      />
-       
-      {/* </Route> */}
-
-{/* Route for signup */}
-<Route
-        path="/signup"
-        element={
-          <Suspense fallback={<div>Loading Signup...</div>}>
-      <ProtectedRoute element={<SignUp />} requiredRole="Superadmin" />
-    </Suspense>
-        }
-      />
-
-<Route
-        path="/verify-otp"
-        element={
-          <Suspense fallback={<div>Loading OtpVerification...</div>}>
-      <ProtectedRoute element={<OtpVerification />} requiredRole="Superadmin" />
-    </Suspense>
-        }
-      />
-
-
-      {/* Route for login */}
       <Route
         path="/login"
         element={
           <Suspense fallback={<div>Loading Login...</div>}>
-            <Login />
+            {isAuthenticated() ? (
+              <Navigate
+                to={useStore.getState().user?.role === "SUPERADMIN" ? "/superadmin" : "/"}
+                replace
+              />
+            ) : (
+              <Login />
+            )}
+          </Suspense>
+        }
+      />
+
+      <Route
+        path="/verify-otp"
+        element={
+          <Suspense fallback={<div>Loading OTP Verification...</div>}>
+            <OtpVerification />
           </Suspense>
         }
       />
@@ -64,7 +48,7 @@ const AppRoutes = () => {
       <Route
         path="/forgot-password"
         element={
-          <Suspense fallback={<div>Loading ForgotPassword...</div>}>
+          <Suspense fallback={<div>Loading Forgot Password...</div>}>
             <ForgotPassword />
           </Suspense>
         }
@@ -79,6 +63,42 @@ const AppRoutes = () => {
           </Suspense>
         }
       />
+
+      {/* =========================
+          USER DASHBOARD
+      ========================= */}
+
+      <Route
+        path="/"
+        element={
+          <Suspense fallback={<div>Loading Dashboard...</div>}>
+            <ProtectedRoute
+              roles={["USER", "ADMIN"]}
+              element={<MainLayout />}
+            />
+          </Suspense>
+        }
+      />
+      {/* =========================
+          SUPERADMIN DASHBOARD
+      ========================= */}
+      <Route
+        path="/superadmin"
+        element={
+          <Suspense fallback={<div>Loading Superadmin...</div>}>
+            <ProtectedRoute
+              roles={["SUPERADMIN"]}
+              element={<MainLayout />}
+            />
+          </Suspense>
+        }
+      />
+
+      {/* =========================
+          FALLBACK
+      ========================= */}
+
+      <Route path="*" element={<Navigate to="/login" replace />} />
 
     </Routes>
   );

@@ -1,10 +1,9 @@
-import React from "react";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "../utils/Api";
 import { Form, Input, Button } from "antd";
 import { useLocation, useNavigate } from "react-router-dom";
 import Styles from "../styles/auth/AuthForm.module.css";
-import logo from "../assets/Logo3.png";
+import logo from "../assets/Logo.png";
 import illustrator from "../assets/login/Illustrator.svg";
 
 const ResetPassword = () => {
@@ -14,12 +13,12 @@ const ResetPassword = () => {
 
   const resetPasswordMutation = useMutation({
     mutationFn: (formData) =>
-      apiRequest("POST", "/users/reset-password", formData),
+      apiRequest("POST", "/users/reset-password", formData,{ auth: false }),
     onSuccess: () => {
       alert("Password reset successfully. Please login.");
       navigate("/login");
     },
-    onError: (error) => alert(error),
+    onError: (error) => alert(error.message),
   });
 
   // Manually derive isLoading
@@ -29,10 +28,10 @@ const ResetPassword = () => {
   const resendOtpMutation = useMutation({
     mutationFn: () => {
       const email = form.getFieldValue("email"); // Get the email value from the form
-      return apiRequest("POST", "/users/resend-otp-reset-password", { email });
+      return apiRequest("POST", "/users/forgot-password", { email },{ auth: false });
     },
     onSuccess: () => alert("OTP has been resent to your email."),
-    onError: (error) => alert(error),
+    onError: (error) => alert(error.message),
   });
 
   // Manually derive isLoadingSendOtp
@@ -74,7 +73,6 @@ const ResetPassword = () => {
               <Input
                 type="email"
                 placeholder="Enter your email"
-                style={{ background:"var(--primary-text)" }}
                 disabled  // Prevent users from modifying the email field
               />
             </Form.Item>
@@ -85,7 +83,6 @@ const ResetPassword = () => {
             >
               <Input
                 placeholder="Enter OTP"
-                style={{ background:"var(--primary-text)" }}
               />
             </Form.Item>
 
@@ -105,17 +102,24 @@ const ResetPassword = () => {
             >
               <Input.Password
                 placeholder="New Password"
-                style={{ background: "var(--primary-text)" }}
               />
             </Form.Item>
 
             <Form.Item
               name="confirmNewPassword"
-              rules={[{ required: true, message: "Please confirm your new password!" }]}
+              rules={[{ required: true, message: "Please confirm your new password!" },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    if (!value || getFieldValue("newPassword") === value) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject("Passwords do not match");
+                  },
+                }),
+              ]}
             >
               <Input.Password
                 placeholder="Confirm New Password"
-                style={{ background: "var(--primary-text)" }}
               />
             </Form.Item>
 

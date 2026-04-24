@@ -2,7 +2,7 @@
     display: flex;
     justify-content: space-between;
     padding: 10px 1.5rem;
-    background-color: white;
+    background-color: var(--header-bg);
     width: 100%;
     position: sticky;
     top: 0;
@@ -10,6 +10,89 @@
     gap: 2rem;
   }
 
-  .logo{
+  .logo {
     height: 40px;
+    filter: var(--logo-filter);
+    transition: filter 0.3s ease;
+  }
+
+  .themeToggleBtn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    background: var(--theme-toggle-bg);
+    box-shadow: var(--theme-toggle-shadow);
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+    font-size: 18px;
+  }
+  
+  .sunIcon {
+    position: absolute;
+    color: #faad14;
+    transition: transform 0.5s ease, opacity 0.5s ease;
+    transform: translateY(0);
+    opacity: 1;
+  }
+  
+  .moonIcon {
+    position: absolute;
+    color: #1890ff;
+    transition: transform 0.5s ease, opacity 0.5s ease;
+    transform: translateY(-30px);
+    opacity: 0;
+  }
+  
+  :global([data-theme="dark"]) .sunIcon {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  
+  :global([data-theme="dark"]) .moonIcon {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  
+  /* --- Header Responsive --- */
+  @media (max-width: 767px) {
+    .header {
+      padding: 6px 0.5rem;
+      gap: 0.25rem 0.5rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .logo {
+      height: 24px;
+      flex-shrink: 0;
+    }
+
+    .themeToggleBtn {
+      width: 24px;
+      height: 24px;
+      font-size: 12px;
+    }
+  }
+
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .header {
+      padding: 8px 1rem;
+      gap: 1rem;
+    }
+
+    .logo {
+      height: 34px;
+    }
+
+    .themeToggleBtn {
+      width: 30px;
+      height: 30px;
+      font-size: 16px;
+    }
   }

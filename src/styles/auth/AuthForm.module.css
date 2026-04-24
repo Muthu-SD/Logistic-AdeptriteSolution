@@ -24,9 +24,8 @@
   justify-content: space-between;
 }
 .logo {
-    width: 70%;
-  height: 98px;
-  /* margin: 0.5rem; */
+  width: 80%;
+  margin-top: 2rem;
 }
 .illustrator{
   border-radius: 6px;
@@ -61,4 +60,61 @@
 }
 .link:hover {
   color: var(--btn-login-hover) !important; /* Darker shade on hover */
+}
+
+
+/* --- Auth Responsive --- */
+@media (max-width: 767px) {
+  .imageFormWrapper {
+    width: 92%;
+    max-width: 400px;
+    flex-direction: column;
+  }
+
+  .imageSection {
+    display: none;
+  }
+
+  .formWrapper {
+    width: 100%;
+  }
+
+  .formContainer {
+    padding: 20px 16px;
+    border-radius: 8px;
+  }
+
+  .formTitle {
+    font-size: 20px;
+    margin-bottom: 14px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .imageFormWrapper {
+    width: 520px;
+  }
+
+  .formContainer {
+    padding: 24px;
+  }
+
+  .formTitle {
+    font-size: 22px;
+    margin-bottom: 16px;
+  }
+}
+
+.turnstileWrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+  width: 100%;
+}
+
+@media (max-width: 480px) {
+  .turnstileWrapper>div {
+    transform: scale(0.8);
+    transform-origin: center center;
+  }
 }

@@ -34,18 +34,40 @@ API.interceptors.response.use(
     const errRes = error.response;
 
     if (errRes) {
+      const code = errRes.data?.code;
+
       if (errRes.status === 401) {
-        // 🔐 Token expired, force logout or redirect
+
+        // HANDLE SESSION_EXPIRED
+        if (code  === "SESSION_EXPIRED") {
+          console.warn("Session expired. Logging out...");
+
+          useStore.getState().logout();
+
+          if (window.location.pathname !== "/login") {
+            window.location.href = "/login?message=session_expired";
+          }
+
+          return Promise.reject({
+            status: 401,
+            code: "SESSION_EXPIRED",
+          });
+        }
+
+        // Default 401 handling
         console.warn("Unauthorized. Logging out...");
         // Clear token from zustand store
         useStore.getState().logout();  // Calling the logout method to clear user and token
-        window.location.href = "/login"; // or trigger logout via context/store
+        if (window.location.pathname !== "/login") {
+          window.location.href = "/login";
+        } // or trigger logout via context/store
       }
 
       // Return normalized error
-      return Promise.reject(
-        errRes.data?.message || errRes.data?.error || "Something went wrong"
-      );
+      return Promise.reject({
+        status: errRes.status,
+        message: errRes.data?.message || errRes.data?.error || "Something went wrong",
+      });
     }
 
     return Promise.reject("Network error");

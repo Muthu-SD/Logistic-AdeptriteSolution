@@ -1,26 +1,51 @@
 import React, { useState, useMemo } from "react";
 import ReactApexChart from "react-apexcharts";
 import { useQuery } from "@tanstack/react-query";
-import { fetchCountryWiseVolumeData } from "./fetchCountryWiseVolumeData";
-import { Button, Modal, Select, Spin } from "antd";
+import {
+  fetchCountryWiseVolumeData,
+  fetchCountryWiseVolumeFullData,
+} from "./fetchCountryWiseVolumeData";
+import { Button, Modal, Select, Spin, DatePicker } from "antd";
 import { ExpandOutlined } from "@ant-design/icons";
 import NoDataFallback from "../../common/NoDataFallback";
+import { useOrganizationData } from "../../../hooks/useOrganizationData";
+import useStore from "../../../store/UseStore";
+import useResponsive from "../../../hooks/useResponsive";
+import dayjs from "dayjs";
+
+const { RangePicker } = DatePicker;
 
 const CountryWiseVolumeChart = () => {
-  const [isFullView, setIsFullView] = useState(false);
-  const [selectedMonth, setSelectedMonth] = useState("all");
-  const [currentPage, setCurrentPage] = useState(0);
-  const itemsPerPage = 10;
+  const { data: orgData } = useOrganizationData();
+  const theme = useStore((state) => state.theme);
+  const { responsive } = useResponsive();
+  const title =
+    orgData?.chartTitles?.countryWiseVolume || "Country Wise Volume";
 
-  // Dashboard view - always "all"
+  const [isFullView, setIsFullView] = useState(false);
+
+  // ✅ STATES
+  const [groupBy, setGroupBy] = useState("Month");
+  const [dateRange, setDateRange] = useState([
+    dayjs().subtract(12, "month"),
+    dayjs(),
+  ]);
+  const [currentPage, setCurrentPage] = useState(0);
+
+  const startDate = dateRange[0]?.format("YYYY-MM-DD");
+  const endDate = dateRange[1]?.format("YYYY-MM-DD");
+
+  // ======================
+  // DASHBOARD
+  // ======================
   const {
     data: dashboardData = {},
     isLoading: isDashboardLoading,
   } = useQuery({
     queryKey: ["country-wise-volume", "dashboard"],
     queryFn: () => fetchCountryWiseVolumeData("all"),
-    refetchInterval: false, // Disable automatic refetching
-    refetchOnWindowFocus: false, // Disable refetching on window focus
+    refetchInterval: false,
+    refetchOnWindowFocus: false,
   });
 
   const dashboardChartData = dashboardData.data || [];
@@ -28,74 +53,105 @@ const CountryWiseVolumeChart = () => {
   const dashboardSeries = dashboardChartData.map((item) => item.volume);
 
   const dashboardChartOptions = {
-    chart: { type: "radialBar" },
-    labels: dashboardLabels,
-    tooltip: {
-       enabled: true,
-      y: { formatter: (val) => `${val.toLocaleString()} Tons` },
-    },
-    dataLabels: {
-      enabled: false, 
-    },
-    legend: { show: false },
-    plotOptions: {
-    radialBar: {
-      hollow: { size: "10%" }, // Adjust as needed
-      track: { background: "#f0f0f0", margin: 2 },
-      dataLabels: {
-        show: false,
+    theme: { mode: theme },
+    chart: {
+      type: "radialBar",
+      background: "transparent",
+      dropShadow: {
+        enabled: true,
+        left: 15,
+        blur: 4,
+        opacity: 0.7,
       },
     },
-  },
+    labels: dashboardLabels,
+    tooltip: {
+      enabled: true,
+      y: { formatter: (val) => `${val.toLocaleString()} Tons` },
+    },
+    dataLabels: { enabled: false },
+    legend: { show: false },
+    plotOptions: {
+      radialBar: {
+        hollow: { size: "10%" },
+        track: {
+          background: theme === "dark" ? "#333333" : "#f0f0f0",
+          margin: 1,
+        },
+        dataLabels: { show: false },
+      },
+    },
   };
 
-  // Full view data
+  // ======================
+  // FULL VIEW
+  // ======================
   const {
-    data: fullViewData = {},
+    data: fullChartData = [],
     isLoading: isFullLoading,
   } = useQuery({
-    queryKey: ["country-wise-volume-full", selectedMonth],
-    queryFn: () => fetchCountryWiseVolumeData(selectedMonth),
+    queryKey: ["country-wise-volume-full", groupBy, startDate, endDate],
+    queryFn: () =>
+      fetchCountryWiseVolumeFullData(groupBy, startDate, endDate),
     enabled: isFullView,
   });
 
-  const monthList = fullViewData.availableMonths || [];
-  const fullChartData = fullViewData.data || [];
+  console.log("FULL DATA:", fullChartData);
 
-  const totalPages = Math.ceil(fullChartData.length / itemsPerPage);
+  // ✅ GROUP DATA (MAIN FIX)
+  const groupedData = useMemo(() => {
+    const map = {};
 
-  const paginatedData = useMemo(() => {
-    const start = currentPage * itemsPerPage;
-    return fullChartData.slice(start, start + itemsPerPage);
-  }, [fullChartData, currentPage]);
+    fullChartData.forEach((item) => {
+      const key = item.group || "Ungrouped";
+      if (!map[key]) map[key] = [];
+      map[key].push(item);
+    });
 
-  const fullLabels = paginatedData.map((item) => item.country);
-  const fullSeries = paginatedData.map((item) => item.volume);
+    return Object.entries(map);
+  }, [fullChartData]);
+
+  const totalPages = groupedData.length;
+
+  // ✅ CURRENT GROUP
+  const currentGroupData = groupedData[currentPage]?.[1] || [];
+  const currentGroupLabel = groupedData[currentPage]?.[0] || "";
+
+  const fullLabels = currentGroupData.map((item) => item.country);
+  const fullSeries = currentGroupData.map((item) => item.volume);
 
   const fullChartOptions = {
-    chart: { type: "pie" },
+    theme: { mode: theme },
+    chart: {
+      type: "pie",
+      background: "transparent",
+      dropShadow: {
+        enabled: true,
+        top: 9,
+        left: 15,
+        blur: 4,
+        opacity: 0.7,
+      },
+    },
     labels: fullLabels,
     tooltip: {
       y: { formatter: (val) => `${val.toLocaleString()} Tons` },
     },
-    title: {
-      text: "Country Wise Volume",
-      align: "center",
-      style: { fontSize: "20px" },
+    stroke: {
+      width: 1,
+      colors: ["transparent"],
     },
-  };
-
-  const monthOptions = useMemo(
-    () => [
-      { label: "All", value: "all" },
-      ...monthList.map((m) => ({ label: m, value: m })),
-    ],
-    [monthList]
-  );
-
-  const handleMonthChange = (value) => {
-    setSelectedMonth(value);
-    setCurrentPage(0);
+    fill: { opacity: 0.9 },
+    title: {
+      text: currentGroupLabel
+        ? `${title} - ${currentGroupLabel}`
+        : title,
+      align: "center",
+      style: {
+        fontSize: "20px",
+        color: theme === "dark" ? "#e0e0e0" : "#333",
+      },
+    },
   };
 
   const handlePrevPage = () => {
@@ -103,11 +159,13 @@ const CountryWiseVolumeChart = () => {
   };
 
   const handleNextPage = () => {
-    if (currentPage < totalPages - 1) setCurrentPage((prev) => prev + 1);
+    if (currentPage < totalPages - 1)
+      setCurrentPage((prev) => prev + 1);
   };
 
   return (
     <div>
+      {/* HEADER */}
       <div
         style={{
           marginBottom: "8px",
@@ -116,11 +174,20 @@ const CountryWiseVolumeChart = () => {
           alignItems: "center",
         }}
       >
-         <h6 style={{ fontSize: "11px", background:"#1A2F7E",color:"white",padding:"3px 3px" }}>Country Wise Volume</h6>
-        <Button style={{ height: 18,width: 18, fontSize: "10px",}} icon={<ExpandOutlined />} onClick={() => setIsFullView(true)}/>
+        <h6 className="dashboard-chart-heading">{title}</h6>
+        <Button
+          style={{ height: 18, width: 18, fontSize: "10px" }}
+          icon={<ExpandOutlined />}
+          onClick={() => {
+            setGroupBy("Month");
+            setDateRange([dayjs().subtract(12, "month"), dayjs()]);
+            setCurrentPage(0);
+            setIsFullView(true);
+          }}
+        />
       </div>
 
-      {/* Dashboard View */}
+      {/* DASHBOARD */}
       {isDashboardLoading ? (
         <div
           style={{
@@ -140,21 +207,75 @@ const CountryWiseVolumeChart = () => {
           options={dashboardChartOptions}
           series={dashboardSeries}
           type="radialBar"
-          height={160}
+           height={responsive({ xs: 150, sm: 150, md: 150, lg: 150, xl: 150 })}
         />
       )}
 
-      {/* Modal - Full View */}
+      {/* FULL VIEW */}
       <Modal
-        title="Full View - Country Wise Volume"
+        title={`Full View - ${title}`}
         open={isFullView}
         onCancel={() => setIsFullView(false)}
         footer={null}
         style={{ top: 0 }}
-        width="100vw"
+        width={responsive({ xs: "100%", md: "95vw", lg: "100vw" })}
         height="100vh"
         destroyOnClose
       >
+        {/* FILTERS */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "16px",
+            gap: "10px",
+            flexWrap: "wrap",
+          }}
+        >
+          <Select
+            value={groupBy}
+            onChange={(val) => {
+              setGroupBy(val);
+              setCurrentPage(0);
+            }}
+            options={[
+              { label: "Day", value: "Day" },
+              { label: "Week", value: "Week" },
+              { label: "Month", value: "Month" },
+              { label: "Year", value: "Year" },
+            ]}
+            style={{ width: 150 }}
+          />
+
+          <RangePicker
+            value={dateRange}
+            onChange={(dates) => {
+              setDateRange(
+                dates || [dayjs().subtract(12, "month"), dayjs()]
+              );
+              setCurrentPage(0);
+            }}
+          />
+
+          <div>
+            <Button
+              onClick={handlePrevPage}
+              disabled={currentPage === 0}
+              style={{ marginRight: 8 }}
+            >
+              Previous
+            </Button>
+            <Button
+              onClick={handleNextPage}
+              disabled={currentPage >= totalPages - 1}
+            >
+              Next
+            </Button>
+          </div>
+        </div>
+
+        {/* CONTENT */}
         {isFullLoading ? (
           <div
             style={{
@@ -167,48 +288,15 @@ const CountryWiseVolumeChart = () => {
           >
             <Spin size="large" />
           </div>
-        ) : dashboardSeries.length === 0 ? (
+        ) : fullSeries.length === 0 ? (
           <NoDataFallback height={200} />
         ) : (
-          <>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: "16px",
-              }}
-            >
-              <Select
-                value={selectedMonth}
-                onChange={handleMonthChange}
-                options={monthOptions}
-                style={{ width: 150 }}
-              />
-              <div>
-                <Button
-                  onClick={handlePrevPage}
-                  disabled={currentPage === 0}
-                  style={{ marginRight: 8 }}
-                >
-                  Previous
-                </Button>
-                <Button
-                  onClick={handleNextPage}
-                  disabled={currentPage >= totalPages - 1}
-                >
-                  Next
-                </Button>
-              </div>
-            </div>
-
-            <ReactApexChart
-              options={fullChartOptions}
-              series={fullSeries}
-              type="pie"
-              height={500}
-            />
-          </>
+          <ReactApexChart
+            options={fullChartOptions}
+            series={fullSeries}
+            type="pie"
+              height={responsive({ xs: 300, sm: 350, md: 400, lg: 460, xl: 500 })}
+          />
         )}
       </Modal>
     </div>

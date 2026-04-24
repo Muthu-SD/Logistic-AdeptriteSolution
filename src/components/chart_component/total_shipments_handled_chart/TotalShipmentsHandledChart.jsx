@@ -1,18 +1,31 @@
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 import ReactApexChart from "react-apexcharts";
 import { useQuery } from "@tanstack/react-query";
-import { Select, Button, Modal, Spin, Pagination } from "antd";
+import { Select, Button, Modal, Spin, DatePicker } from "antd";
 import { ExpandOutlined } from "@ant-design/icons";
-import { fetchTotalShipmentsHandledData } from "./fetchTotalShipmentsHandledData";
+import { fetchTotalShipmentsHandledData, fetchTotalShipmentsHandledFullData } from "./fetchTotalShipmentsHandledData";
 import NoDataFallback from "../../common/NoDataFallback";
+import { useOrganizationData } from "../../../hooks/useOrganizationData";
+import useStore from "../../../store/UseStore";
+import useResponsive from "../../../hooks/useResponsive";
+import dayjs from "dayjs";
 
 const DASHBOARD_ITEMS_LIMIT = 5;
-const FULLVIEW_ITEMS_PER_PAGE = 10;
+const { RangePicker } = DatePicker;
 
 const TotalShipmentsHandledChart = () => {
+  const { data: orgData } = useOrganizationData();
+  const theme = useStore((state) => state.theme);
+  const { responsive } = useResponsive();
+  const title = orgData?.chartTitles?.totalShipmentsHandled || "Total Shipments Handled";
   const [isFullView, setIsFullView] = useState(false);
-  const [currentModalPage, setCurrentModalPage] = useState(1);
-  const [selectedYearInModal, setSelectedYearInModal] = useState("all");
+  const [groupBy, setGroupBy] = useState("Month");
+  const [dateRange, setDateRange] = useState([dayjs().subtract(12, "month"), dayjs()]);
+  const [currentPage, setCurrentPage] = useState(0);
+  const itemsPerPage =
+    groupBy === "Day" ? 7 : groupBy === "Week" ? 3 : groupBy === "Month" ? 12 : 6;
+  const startDate = dateRange[0]?.format("YYYY-MM-DD");
+  const endDate = dateRange[1]?.format("YYYY-MM-DD");
 
   const { data = {}, isLoading } = useQuery({
     queryKey: ["total-shipments-handled", "all"],
@@ -21,34 +34,19 @@ const TotalShipmentsHandledChart = () => {
     refetchOnWindowFocus: false, // Disable refetching on window focus
   });
 
-  const { data: modalData = {}, isLoading: isLoadingModal } = useQuery({
-    queryKey: ["total-shipments-handled-modal", selectedYearInModal],
-    queryFn: () => fetchTotalShipmentsHandledData(selectedYearInModal),
+  const { data: modalChartData = [], isLoading: isLoadingModal } = useQuery({
+    queryKey: ["total-shipments-handled-modal", groupBy, startDate, endDate],
+    queryFn: () => fetchTotalShipmentsHandledFullData(groupBy, startDate, endDate),
+    enabled: isFullView,
     refetchInterval: false, // Disable automatic refetching
     refetchOnWindowFocus: false, // Disable refetching on window focus
   });
 
   const chartData = data.data || [];
-  const availableYears = data.availableYears || [];
-  const modalChartData = modalData.data || [];
-
-  const yearOptions = useMemo(
-    () => [
-      { label: "All", value: "all" },
-      ...availableYears.map((y) => ({ label: y, value: y })),
-    ],
-    [availableYears]
-  );
-
-  const handleYearChangeInModal = (value) => {
-    setSelectedYearInModal(value);
-    setCurrentModalPage(1); // Reset page on year change
-  };
-
   const dashboardData = chartData.slice(0, DASHBOARD_ITEMS_LIMIT);
   const fullviewData = modalChartData.slice(
-    (currentModalPage - 1) * FULLVIEW_ITEMS_PER_PAGE,
-    currentModalPage * FULLVIEW_ITEMS_PER_PAGE
+    currentPage * itemsPerPage,
+    (currentPage + 1) * itemsPerPage
   );
 
   // Add a utility function to shorten the names
@@ -58,8 +56,10 @@ const TotalShipmentsHandledChart = () => {
 
 
   const getDashboardChartOptions = (categories) => ({
+    theme: { mode: theme },
     chart: {
       type: "bar",
+      background: "transparent",
       animations: {
       enabled: true,
       easing: "easeinout",
@@ -69,6 +69,15 @@ const TotalShipmentsHandledChart = () => {
         delay: 200,
       },
     },
+    dropShadow: {
+        enabled: true,
+        // top: 1,
+        // right: 10,
+        // bottom: 10,
+        left: 5,
+        blur: 0.3,
+        opacity: 0.4,
+      },
       toolbar: { show: false },
     },
      plotOptions: {
@@ -79,6 +88,11 @@ const TotalShipmentsHandledChart = () => {
     },
     dataLabels: {
       enabled: false, // Hides data labels on bars
+    },
+    stroke: {
+      show: true,
+      width: 2,
+      colors: [theme === "dark" ? "#3ca8ff" : "#0070C8"],
     },
     xaxis: {
       categories: categories.map((name) => shortenName(name)), // Shorten the names here
@@ -93,6 +107,7 @@ const TotalShipmentsHandledChart = () => {
         style: {
           fontSize: "10px",
           fontWeight: 600,
+          color: theme === "dark" ? "#e0e0e0" : "#333",
         },
       },
     },
@@ -101,8 +116,10 @@ const TotalShipmentsHandledChart = () => {
     },
   });
   const getFullViewChartOptions = (categories) => ({
+    theme: { mode: theme },
     chart: {
       type: "bar",
+      background: "transparent",
         animations: {
     enabled: true,           // Enable/disable animation
     easing: "easeinout",        // Animation type: "linear", "easein", "easeout", "easeinout", "easeinback", "easeoutback", "easeinbounce", "easeoutbounce"
@@ -112,6 +129,15 @@ const TotalShipmentsHandledChart = () => {
       delay: 200,            // Delay between each bar animation
     },
   },
+  dropShadow: {
+        enabled: true,
+        top: 5,
+        // right: 10,
+        // bottom: 10,
+        left: 5,
+        blur: 0.3,
+        opacity: 0.4,
+      },
   toolbar: { show: false },
 },
     xaxis: {
@@ -130,6 +156,7 @@ const TotalShipmentsHandledChart = () => {
         style: {
           fontSize: "20px",
           fontWeight: 600,
+          color: theme === "dark" ? "#e0e0e0" : "#333",
         },
       },
     },
@@ -137,9 +164,15 @@ const TotalShipmentsHandledChart = () => {
       y: { formatter: (value) => `${value}` },
     },
     title: {
-      text: "Total Shipments Handled",
+      text: title,
       align: "center",
-      style: { fontSize: "24px" },
+      style: { fontSize: responsive({ xs: "16px", md: "20px", xl: "24px" }), color: theme === "dark" ? "#e0e0e0" : "#333" },
+    },
+    plotOptions: { bar: { borderRadius: 6, columnWidth: "50%" } },
+    stroke: {
+      show: true,
+      width: 2,
+      colors: [theme === "dark" ? "#3ca8ff" : "#0070C8"],
     },
   });
 
@@ -153,8 +186,17 @@ const TotalShipmentsHandledChart = () => {
           alignItems: "center",
         }}
       >
-        <h6 style={{ fontSize: "12px", background:"#1A2F7E",color:"white",padding:"3px 3px"  }}>Total Shipments Handled</h6>
-        <Button style={{ height: 18,width: 18, fontSize: "10px", }} icon={<ExpandOutlined />} onClick={() => setIsFullView(true)}/>
+        <h6 className="dashboard-chart-heading">{title}</h6>
+        <Button
+          style={{ height: 18, width: 18, fontSize: "10px", }}
+          icon={<ExpandOutlined />}
+          onClick={() => {
+            setGroupBy("Month");
+            setDateRange([dayjs().subtract(12, "month"), dayjs()]);
+            setCurrentPage(0);
+            setIsFullView(true);
+          }}
+        />
       </div>
 
       {isLoading ? (
@@ -166,9 +208,9 @@ const TotalShipmentsHandledChart = () => {
             justifyContent: "center",
           }}
         >
-          <Spin size="medium"  />
+          <Spin size="medium" />
         </div>
-      ) : modalChartData.length === 0 ? (
+      ) : dashboardData.length === 0 ? (
         <NoDataFallback />
       ) : (
         <ReactApexChart
@@ -182,20 +224,72 @@ const TotalShipmentsHandledChart = () => {
             },
           ]}
           type="bar"
-          height={140}
+          height={responsive({ xs: 120, sm: 120, md: 130, lg: 140, xl: 140 })}
         />
       )}
 
       <Modal
-        title="Full View - Total Shipments Handled"
+        title={`Full View - ${title}`}
         open={isFullView}
         onCancel={() => setIsFullView(false)}
         footer={null}
         style={{ top: 0 }}
-        width="100vw"
+        width={responsive({ xs: "100%", md: "95vw", lg: "100vw" })}
         height="100vh"
         destroyOnClose
       >
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "16px",
+            gap: "8px",
+            flexWrap: "wrap",
+          }}
+        >
+          <Select
+            value={groupBy}
+            onChange={(value) => {
+              setGroupBy(value);
+              setCurrentPage(0);
+            }}
+            options={[
+              { label: "Day", value: "Day" },
+              { label: "Week", value: "Week" },
+              { label: "Month", value: "Month" },
+              { label: "Year", value: "Year" },
+            ]}
+            style={{ width: 150 }}
+          />
+          <RangePicker
+            value={dateRange}
+            onChange={(dates) => {
+              setDateRange(dates || [dayjs().subtract(12, "month"), dayjs()]);
+              setCurrentPage(0);
+            }}
+            style={{ maxWidth: 300 }}
+          />
+          <div>
+            <Button
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
+              disabled={currentPage === 0}
+              style={{ marginRight: 8 }}
+            >
+              Previous
+            </Button>
+            <Button
+              onClick={() =>
+                setCurrentPage((prev) =>
+                  (prev + 1) * itemsPerPage < modalChartData.length ? prev + 1 : prev
+                )
+              }
+              disabled={(currentPage + 1) * itemsPerPage >= modalChartData.length}
+            >
+              Next
+            </Button>
+          </div>
+        </div>
         {isLoadingModal ? (
           <div
             style={{
@@ -210,45 +304,19 @@ const TotalShipmentsHandledChart = () => {
         ) : modalChartData.length === 0 ? (
           <NoDataFallback height={200} />
         ) : (
-          <>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: "16px",
-              }}
-            >
-              <Select
-                value={selectedYearInModal}
-                onChange={handleYearChangeInModal}
-                options={yearOptions}
-                style={{ width: 150 }}
-              />
-            </div>
-
-            <ReactApexChart
-              options={getFullViewChartOptions(
-                fullviewData.map((item) => item.shipper)
-              )}
-              series={[
-                {
-                  name: "Shipments",
-                  data: fullviewData.map((item) => item.count),
-                },
-              ]}
-              type="bar"
-              height={470}
-            />
-
-            <Pagination
-              style={{ textAlign: "center", fontSize: "16px" }}
-              current={currentModalPage}
-              pageSize={FULLVIEW_ITEMS_PER_PAGE}
-              total={modalChartData.length}
-              onChange={(page) => setCurrentModalPage(page)}
-            />
-          </>
+          <ReactApexChart
+            options={getFullViewChartOptions(
+              fullviewData.map((item) => item.group)
+            )}
+            series={[
+              {
+                name: "Shipments",
+                data: fullviewData.map((item) => item.count),
+              },
+            ]}
+            type="bar"
+            height={responsive({ xs: 280, sm: 320, md: 380, lg: 440, xl: 470 })}
+          />
         )}
       </Modal>
     </div>

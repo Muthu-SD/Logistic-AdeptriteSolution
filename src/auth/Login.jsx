@@ -1,39 +1,57 @@
-import React, { useState } from "react";
+import { useState,useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "../utils/Api";
 import useStore from "../store/UseStore";
 import { Form, Input, Button, message } from "antd";
 import { useNavigate, Link } from "react-router-dom";
 import Styles from "../styles/auth/AuthForm.module.css";
-import logo from "../assets/Logo3.png"; 
-import illustrator from "../assets/login/Illustrator.svg"; 
+import logo from "../assets/Logo.png"; 
+import illustrator from "../assets/login/Illustrator.svg";
+import Turnstile from "react-turnstile";
+import useResponsive from "../hooks/useResponsive"; 
 
 const Login = () => {
+  const { isMobile } = useResponsive();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("User");
-  const { setUser, setToken } = useStore();
+  const [turnstileToken, setTurnstileToken] = useState(null);
+  const { setAuth } = useStore(); 
   const navigate = useNavigate(); 
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("message") === "session_expired") {
+      message.warning("You have been logged out because your account was accessed from another device", 5);
+      // Clean up the URL
+      window.history.replaceState({}, document.title, "/login");
+    }
+  }, []);
+
   const loginMutation = useMutation({
-    mutationFn: (data) => apiRequest("POST", "/users/login", data),
+    mutationFn: (data) => apiRequest("POST", "/users/login", data,{ auth: false }),
     onSuccess: (data) => {
       message.success("Login successfull!");
-      setToken(data.token);
-      setUser(data.user);
-      navigate("/");
+      // Save auth
+      setAuth({
+        user: data.user,
+        token: data.token,
+      });
+     // Redirect based on role
+      if (data.user.role === "SUPERADMIN") {
+        navigate("/superadmin");
+      } else {
+        navigate("/");
+      }
     },
     onError: (error) => {
-      const messageText = error;
+      const messageText = error?.toString();
       if ( messageText?.toLowerCase().includes("verify")) {
         // Save email to localStorage to use in OTP verification
         localStorage.setItem("verifyEmail", email);
         message.warning("Please verify your email.");
         navigate("/verify-otp");
-      }  else if (messageText) {
-        message.error(messageText);
-      } else {
-        message.error("Login failed. Please try again.");
+      }else {
+        message.error(error?.message || "Login failed. Please try again.");
       }
     },
   });
@@ -42,7 +60,11 @@ const Login = () => {
   const isLoading = loginMutation.status === "loading" || loginMutation.status === "pending";
 
   const handleLogin = () => {
-    loginMutation.mutate({ email, password, role });
+     if (!turnstileToken) {
+      message.error("Please complete the verification.");
+      return;
+    }
+    loginMutation.mutate({ email, password, token: turnstileToken });
   };
 
   return (
@@ -65,13 +87,7 @@ const Login = () => {
             onFinish={handleLogin}
             className={Styles.formContainer}
           >
-
             <h2 className={Styles.formTitle}>Login</h2>
-            <select value={role} onChange={(e) => setRole(e.target.value)}>
-          <option value="Superadmin">Superadmin</option>
-          <option value="Admin">Admin</option>
-          <option value="User">User</option>
-        </select>
             <Form.Item
               name="email"
               rules={[{ required: true, message: "Please input your email!" }]}
@@ -79,11 +95,9 @@ const Login = () => {
               <Input
                 type="email"
                 placeholder="Email"
-                style={{
-                  background:"var(--primary-text)",
-                }}
                 value={email} 
                 onChange={(e) => setEmail(e.target.value)} 
+                autoComplete="username" 
               />
             </Form.Item>
             <Form.Item
@@ -94,10 +108,23 @@ const Login = () => {
             >
               <Input.Password
                 placeholder="Password"
-                style={{
-                  background: "var(--primary-text)",
-                }}
                 value={password} onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
+              />
+            </Form.Item>
+            <Form.Item className={Styles.turnstileWrapper}
+            >
+              <Turnstile
+                sitekey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
+                onVerify={(token) => {
+                  setTurnstileToken(token);
+                }}
+                onError={(err) => {
+                  console.error("Turnstile Error Details:", err);
+                  message.error("CAPTCHA error. Please try again.");
+                }}
+                size={isMobile ? "normal" : "compact"}
+                theme="light"
               />
             </Form.Item>
             <Form.Item style={{ textAlign: "center" }}>

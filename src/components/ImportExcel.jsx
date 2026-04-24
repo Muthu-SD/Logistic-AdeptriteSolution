@@ -1,16 +1,23 @@
-import React, { useRef, useState } from "react";
+import  { useRef, useState } from "react";
 import { message, Spin } from "antd";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CheckCircleOutlined } from "@ant-design/icons";
 import styles from ".././styles/ImportExcel.module.css";
 import { apiRequest } from "../utils/Api";
+import useStore from "../store/UseStore";
 
 const ImportExcel = ({ onSuccess }) => {
   const fileInputRef = useRef(null);
   const queryClient = useQueryClient();
+  const { user, selectedOrganization } = useStore();
   const [uploading, setUploading] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
 
+  // 🚫 Regular users should never upload
+  if (user?.role !== "SUPERADMIN" && user?.role !== "ADMIN") {
+    return null;
+  }
+  
   const { mutate: uploadExcel } = useMutation({
     mutationFn: (formData) => apiRequest("POST", "/excel/upload", formData), // token auto-attached via interceptor
     onSuccess: () => {
@@ -19,34 +26,41 @@ const ImportExcel = ({ onSuccess }) => {
       message.success("Excel uploaded successfully!");
 
       setTimeout(() => {
-        queryClient.invalidateQueries({ queryKey: ["current-shipment-data"] });// Invalidate queries to refresh data and same queryKey name as in the API
-        queryClient.invalidateQueries({ queryKey: ["transit-lead-time-data"] });
-        queryClient.invalidateQueries({ queryKey: ["supplier-wise-volume"] });
-        queryClient.invalidateQueries({ queryKey: ["country-wise-volume"] });
-        queryClient.invalidateQueries({ queryKey: ["total-shipments-handled"] });
-        queryClient.invalidateQueries({ queryKey: ["shipment-under-clearance-table"] });
-        queryClient.invalidateQueries({ queryKey: ["outstanding-overdue-table"] });
-        queryClient.invalidateQueries({ queryKey: ["shipment-in-pipeline-table"] });
-        queryClient.invalidateQueries({ queryKey: ["current-info-marquee"] });
+        // queryClient.invalidateQueries({ queryKey: ["current-shipment-data"] });// Invalidate queries to refresh data and same queryKey name as in the API
+        // queryClient.invalidateQueries({ queryKey: ["transit-lead-time-data"] });
+        // queryClient.invalidateQueries({ queryKey: ["supplier-wise-volume"] });
+        // queryClient.invalidateQueries({ queryKey: ["country-wise-volume"] });
+        // queryClient.invalidateQueries({ queryKey: ["total-shipments-handled"] });
+        // queryClient.invalidateQueries({ queryKey: ["shipment-under-clearance-table"] });
+        // queryClient.invalidateQueries({ queryKey: ["outstanding-overdue-table"] });
+        // queryClient.invalidateQueries({ queryKey: ["shipment-in-pipeline-table"] });
+        // queryClient.invalidateQueries({ queryKey: ["current-info-marquee"] });
+        queryClient.invalidateQueries();
         setUploadSuccess(false);
         onSuccess?.(); // Call the onSuccess callback if provided
       }, 1500);
     },
     onError: (err) => {
       setUploading(false);
-      const errorMsg = err?.message || "Upload failed";
-      message.error(errorMsg);
+      message.error(err || "Upload failed");
     },
   });
-
-  const handleClick = () => fileInputRef.current?.click();
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;// If no file selected, exit early
 
+    const targetOrgId = user?.role === "SUPERADMIN" ? selectedOrganization : user?.organizationId;
+
+    if (!targetOrgId) {
+      message.warning("Please select an organization first");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("file", file);// Append the selected file to FormData
+
+    formData.append("organizationId", targetOrgId);
 
     setUploading(true);
     uploadExcel(formData);// Trigger the upload request
@@ -64,7 +78,7 @@ const ImportExcel = ({ onSuccess }) => {
       />
       <button
         style={{ display: "none" }} // Hide the button
-        onClick={handleClick} // Trigger the file input click event
+        onClick={() => fileInputRef.current?.click()} // Trigger the file input click event
         id="triggerImportBtn"
       />
 

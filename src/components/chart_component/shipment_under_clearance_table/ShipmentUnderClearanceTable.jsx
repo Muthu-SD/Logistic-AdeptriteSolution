@@ -3,14 +3,33 @@ import { useQuery } from "@tanstack/react-query";
 import { Table, Spin, Modal, Button } from "antd";
 import { ExpandOutlined } from "@ant-design/icons";
 import { apiRequest } from "../../../utils/Api";
+import useStore from "../../../store/UseStore";
 import NoDataFallback from "../../common/NoDataFallback";
+import { useOrganizationData } from "../../../hooks/useOrganizationData";
+import useResponsive from "../../../hooks/useResponsive";
+
 
 const fetchUnderClearanceData = async () => {
-  const response = await apiRequest("GET", "/excel/shipment-under-clearance-table");
+  const { user, selectedOrganization } = useStore.getState();
+  const isSuperadmin = user?.role === "SUPERADMIN";
+
+  if (isSuperadmin && !selectedOrganization) {
+    return [];
+  }
+
+  const params = {
+    ...(isSuperadmin && { organizationId: selectedOrganization }),
+  };
+
+  const response = await apiRequest("GET", "/excel/shipment-under-clearance-table", null, { params });
+
   return response;
 };
 
 const ShipmentUnderClearanceTable = () => {
+  const { data: orgData } = useOrganizationData();
+  const { isMobile, responsive } = useResponsive();
+  const title = orgData?.chartTitles?.shipmentUnderClearance || "Shipment Under Clearance";
   const [isFullView, setIsFullView] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -26,6 +45,7 @@ const ShipmentUnderClearanceTable = () => {
       title: "BL / HAWB Number",
       dataIndex: "blOrHawbNumber",
       key: "blOrHawbNumber",
+      width: 170,
     },
     {
       title: "Shipper",
@@ -36,6 +56,7 @@ const ShipmentUnderClearanceTable = () => {
       title: "ETA",
       dataIndex: "eta",
       key: "eta",
+      width: 120,
       render: (date) =>
         new Date(date).toLocaleDateString("en-GB", {
           day: "2-digit",
@@ -52,11 +73,13 @@ const ShipmentUnderClearanceTable = () => {
       title: "Origin Country",
       dataIndex: "originCountry",
       key: "originCountry",
+      width: 150,
     },
     {
       title: "Query Info",
       dataIndex: "queryInfo",
       key: "queryInfo",
+      width: 110,
     },
   ];
 
@@ -64,7 +87,7 @@ const ShipmentUnderClearanceTable = () => {
   const dashboardColumns = [
     columns[0], // BL / HAWB Number
     columns[2], // ETA
-    columns[4], // Origin Country
+    ...(!isMobile ? [columns[4]] : []), // Origin Country - hide on mobile
   ];
 
   // const DASHBOARD_ROWS = 8;
@@ -79,7 +102,7 @@ const ShipmentUnderClearanceTable = () => {
           alignItems: "center",
         }}
       >
-        <h6 style={{ fontSize: "12px", background:"#9DD6ED",padding:"3px 3px" }}>Shipment Under Clearance</h6>
+        <h6 className="dashboard-chart-heading">{title}</h6>
         <Button style={{ height: 18,width: 18, fontSize: "10px", }} icon={<ExpandOutlined />} onClick={() => setIsFullView(true)}/>
       </div>
 
@@ -103,18 +126,18 @@ const ShipmentUnderClearanceTable = () => {
           dataSource={data}
           rowKey={(record) => record._id}
           pagination={false}
-          scroll={{ y:300, }}
+          scroll={{ y:123, }}
         />
         </div>
       )}
 
       <Modal
-        title="Full View - Shipment Under Clearance"
+        title={<div style={{ marginBottom: "12px" }}>{`Full View - ${title}`}</div>}
         open={isFullView}
         onCancel={() => setIsFullView(false)}
         footer={null}
         style={{ top: 0 }}
-        width="100vw"
+        width={responsive({ xs: "100%", md: "95vw", lg: "100vw" })}
         // height="100vh"
         destroyOnClose
         centered

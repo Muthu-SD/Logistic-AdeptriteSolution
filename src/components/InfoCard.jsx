@@ -1,25 +1,25 @@
-import React from "react";
 import { Card } from "antd";
+import useResponsive from "../hooks/useResponsive";
 
-const InfoCard = ({ title, subtitle, children, padding = "7px", minHeight = "180px"  }) => {
+const InfoCard = ({ title, subtitle, children, padding }) => {
+  const { responsive } = useResponsive();
+  const cardPadding = padding || responsive({ xs: "8px", sm: "10px", md: "10px", lg: "12px", xl: "12px" });
 
   return (
     <Card
-     styles={{ body: { padding: padding } }}
+     styles={{ body: { padding: cardPadding } }}
       style={{
         borderRadius: "8px",
-        // padding: padding,
-        background: "var(--primary-text)",
-        height: "calc(100vh - 450px)",
-        minHeight: minHeight,
+        background: "var(--card-bg)",
       }}
       className="info-card"
     >
-      <h3 style={{ fontSize: "1rem", fontWeight: "bold" }}>{title}</h3>
-      {subtitle && <p style={{ marginBottom: "1rem" }}>{subtitle}</p>}
+      <h3 style={{ fontSize: responsive({ xs: "0.85rem", md: "0.9rem", xl: "1rem" }), fontWeight: "bold", color: "var(--chart-heading-text)" }}>{title}</h3>
+      {subtitle && <p style={{ marginBottom: responsive({ xs: "0.5rem", xl: "1rem" }), color: "var(--chart-heading-text)" }}>{subtitle}</p>}
       {children}
     </Card>
   );
 };
 
 export default InfoCard;
+

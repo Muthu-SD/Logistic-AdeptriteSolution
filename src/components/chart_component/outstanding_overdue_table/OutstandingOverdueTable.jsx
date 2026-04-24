@@ -1,16 +1,34 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Table, Spin, Modal, Button } from "antd";
 import { ExpandOutlined } from "@ant-design/icons";
 import { apiRequest } from "../../../utils/Api";
+import useStore from "../../../store/UseStore";
 import NoDataFallback from "../../common/NoDataFallback";
+import { useOrganizationData } from "../../../hooks/useOrganizationData";
+import useResponsive from "../../../hooks/useResponsive";
 
 const fetchOutstandingOverdueData = async () => {
-  const response = await apiRequest("GET", "/excel/outstanding-overdue-table");
+  const { user, selectedOrganization } = useStore.getState();
+  const isSuperadmin = user?.role === "SUPERADMIN";
+
+  if (isSuperadmin && !selectedOrganization) {
+    return [];
+  }
+
+  const params = {
+    ...(isSuperadmin && { organizationId: selectedOrganization }),
+  };
+
+  const response = await apiRequest("GET", "/excel/outstanding-overdue-table", null, { params });
+
   return response;
 };
 
 const OutstandingOverdueTable = () => {
+  const { data: orgData } = useOrganizationData();
+  const { isMobile, responsive } = useResponsive();
+  const title = orgData?.chartTitles?.outstandingOverdue || "Outstanding Overdue Invoices";
   const [isFullView, setIsFullView] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -57,13 +75,13 @@ const OutstandingOverdueTable = () => {
     },
   ];
 
-    // Only show key columns in dashboard view
+  // Only show key columns in dashboard view
   const dashboardColumns = [
     columns[1], // Invoice Number
     columns[4], // Overdue Days
   ];
 
-  const DASHBOARD_ROWS = 4;
+  // const DASHBOARD_ROWS = 4;
 
   return (
     <div>
@@ -75,10 +93,10 @@ const OutstandingOverdueTable = () => {
           alignItems: "center",
         }}
       >
-       <h6 style={{ fontSize: "12px", background:"#9DD6ED",padding:"3px 3px" }}>Outstanding Overdue Invoices</h6>
-        <Button style={{ height: 18,width: 18, fontSize: "10px", }} icon={<ExpandOutlined />} onClick={() => setIsFullView(true)}/>
+        <h6 className="dashboard-chart-heading">{title}</h6>
+        <Button style={{ height: 18, width: 18, fontSize: "10px", }} icon={<ExpandOutlined />} onClick={() => setIsFullView(true)} />
       </div>
-      
+
 
       {isLoading ? (
         <div
@@ -95,23 +113,24 @@ const OutstandingOverdueTable = () => {
         <NoDataFallback />
       ) : (
         <div className="dashboard-table-compact">
-        <Table
-          columns={dashboardColumns}
-          dataSource={data}
-          rowKey={(record) => record._id}
-          pagination={false}
-          scroll={{ y:120, }}
-        />
+          <Table
+            columns={dashboardColumns}
+            dataSource={data}
+            rowKey={(record) => record._id}
+            pagination={false}
+            scroll={{ y: 120, }}
+          />
         </div>
       )}
 
       <Modal
-        title="Full View - Outstanding Overdue Invoices"
+        // title="Full View - Outstanding Overdue Invoices"
+        title={<div style={{ marginBottom: "12px" }}>Full View - {title}</div>}
         open={isFullView}
         onCancel={() => setIsFullView(false)}
         footer={null}
         style={{ top: 0 }}
-        width="100vw"
+        width={responsive({ xs: "100%", md: "95vw", lg: "100vw" })}
         destroyOnClose
         centered
       >

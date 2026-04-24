@@ -291,7 +291,7 @@ export const apiRequest = async (
 };
 ======================================================================================================================================================
 
-his below is my folder structure for vite Logistics_Dashboard frontend
+this below is my folder structure for vite Logistics_Dashboard frontend
 
 logistics_dashboard/
 |
@@ -319,6 +319,8 @@ src/
 │   ├── Login.jsx
 │   ├── ForgotPassword.jsx
 │   ├── OtpVerification.jsx
+│   ├── ResetPassword.jsx
+│   ├── SignUp.jsx
 ├── components/
 │   ├── chart_component/ 
 │   ├── country_wise_volume_chart / 
@@ -363,8 +365,8 @@ src/
 ├── styles/
 │   ├── auth/ 
 │   │   ├── AuthForm.module.css
-│   ├── Dashboard.module.css
 │   ├── Header.module.css
+│   ├── ImportExcel.module.css
 │   ├── MainLayout.module.css
 ├── utils/
 │   ├── Api.js

@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "../utils/Api";
 import { Form, Input, Button, message } from "antd";
 import { useNavigate, Link } from "react-router-dom";
 import Styles from "../styles/auth/AuthForm.module.css";
-import logo from "../assets/Logo3.png";
+import logo from "../assets/Logo.png";
 import illustrator from "../assets/login/Illustrator.svg";
 
 const SignUp = () => {
@@ -52,18 +52,11 @@ const isLoading = signUpMutation.status === "loading" || signUpMutation.status =
           >
             <h2 className={Styles.formTitle}>Sign Up</h2>
 
-            <select value={role} onChange={(e) => setRole(e.target.value)}>
-              <option value="Superadmin">Superadmin</option>
-              <option value="Admin">Admin</option>
-              <option value="User">User</option>
-            </select>
-
             <Form.Item name="name" rules={[{ required: true, message: "Please input your name!" }]}>
               <Input
                 placeholder="Name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                style={{ background: "var(--primary-text)" }}
               />
             </Form.Item>
 
@@ -73,7 +66,6 @@ const isLoading = signUpMutation.status === "loading" || signUpMutation.status =
                 placeholder="Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                style={{ background: "var(--primary-text)" }}
               />
             </Form.Item>
 
@@ -82,7 +74,6 @@ const isLoading = signUpMutation.status === "loading" || signUpMutation.status =
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                style={{ background: "var(--primary-text)" }}
               />
             </Form.Item>
 
@@ -91,7 +82,6 @@ const isLoading = signUpMutation.status === "loading" || signUpMutation.status =
                 placeholder="Confirm Password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                style={{ background: "var(--primary-text)" }}
               />
             </Form.Item>
 

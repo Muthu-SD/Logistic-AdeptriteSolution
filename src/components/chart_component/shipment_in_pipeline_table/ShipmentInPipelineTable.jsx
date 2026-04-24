@@ -1,16 +1,34 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Table, Spin, Modal, Button } from "antd";
 import { ExpandOutlined } from "@ant-design/icons";
 import { apiRequest } from "../../../utils/Api";
+import useStore from "../../../store/UseStore";
 import NoDataFallback from "../../common/NoDataFallback";
+import { useOrganizationData } from "../../../hooks/useOrganizationData";
+import useResponsive from "../../../hooks/useResponsive";
 
 const fetchInPipelineData = async () => {
-  const response = await apiRequest("GET", "/excel/shipment-in-pipeline-table");
+  const { user, selectedOrganization } = useStore.getState();
+  const isSuperadmin = user?.role === "SUPERADMIN";
+
+  if (isSuperadmin && !selectedOrganization) {
+    return [];
+  }
+
+  const params = {
+    ...(isSuperadmin && { organizationId: selectedOrganization }),
+  };
+
+  const response = await apiRequest("GET", "/excel/shipment-in-pipeline-table", null, { params });
+
   return response;
 };
 
 const ShipmentInPipelineTable = () => {
+  const { data: orgData } = useOrganizationData();
+  const { isMobile, responsive } = useResponsive();
+  const title = orgData?.chartTitles?.shipmentInPipeline || "Shipment In Pipeline";
   const [isFullView, setIsFullView] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -60,13 +78,20 @@ const ShipmentInPipelineTable = () => {
     },
   ];
 
-   // Only show key columns in dashboard view
-  const dashboardColumns = [
-    columns[0], // BL / HAWB Number
-    columns[1], // Shipper
-    columns[2], // ETA
-      { ...columns[3], width: 280},  // Material Description
-    columns[4], // Origin Country
+  // Only show key columns in dashboard view
+  const dashboardColumns = isMobile
+    ? [
+        { ...columns[0], width: 100 }, // BL / HAWB Number
+        { ...columns[2], width: 100 }, // ETA
+        { ...columns[4], width: 120 }, // Origin Country
+      ]
+    : [
+    { ...columns[0], width: 100 }, // BL / HAWB Number
+    { ...columns[1], width: 90 }, // Shipper
+    { ...columns[2], width: 100 }, // ETA
+    { ...columns[3], width: 180 },  // Material Description
+    { ...columns[4], width: 120 }, // Origin Country
+    { ...columns[5], width: 170 }, // Remarks
   ];
 
   // const DASHBOARD_ROWS = 4;
@@ -81,8 +106,8 @@ const ShipmentInPipelineTable = () => {
           alignItems: "center",
         }}
       >
-         <h6 style={{ fontSize: "12px", background:"#9DD6ED",padding:"3px 3px" }}>Shipment In Pipeline</h6>
-        <Button style={{ height: 18,width: 18, fontSize: "10px", }} icon={<ExpandOutlined />} onClick={() => setIsFullView(true)}/>
+        <h6 className="dashboard-chart-heading">{title}</h6>
+        <Button style={{ height: 18, width: 18, fontSize: "10px", }} icon={<ExpandOutlined />} onClick={() => setIsFullView(true)} />
       </div>
 
       {isLoading ? (
@@ -100,23 +125,23 @@ const ShipmentInPipelineTable = () => {
         <NoDataFallback />
       ) : (
         <div className="dashboard-table-compact">
-        <Table
-          columns={dashboardColumns}
-          dataSource={data}
-          rowKey={(record) => record._id}
-          pagination={false}
-          scroll={{ y:100, }}
-        />
+          <Table
+            columns={dashboardColumns}
+            dataSource={data}
+            rowKey={(record) => record._id}
+            pagination={false}
+            scroll={{ y: 85, }}
+          />
         </div>
       )}
 
       <Modal
-        title="Full View - Shipment In Pipeline"
+        title={<div style={{ marginBottom: "12px" }}>{`Full View - ${title}`}</div>}
         open={isFullView}
         onCancel={() => setIsFullView(false)}
         footer={null}
         style={{ top: 0 }}
-        width="100vw"
+        width={responsive({ xs: "100%", md: "95vw", lg: "100vw" })}
         // height="100vw"
         destroyOnClose
         centered

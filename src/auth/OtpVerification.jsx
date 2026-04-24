@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "../utils/Api";
 import { Form, Input, Button, message } from "antd";
 import { useNavigate } from "react-router-dom";
 import Styles from "../styles/auth/AuthForm.module.css";
-import logo from "../assets/Logo3.png";
+import logo from "../assets/Logo.png";
 import illustrator from "../assets/login/Illustrator.svg";
 
 const OtpVerification = () => {
@@ -16,31 +16,31 @@ const OtpVerification = () => {
     const storedEmail = localStorage.getItem("verifyEmail");
     if (!storedEmail) {
       message.warning("Session expired. Please sign up again.");
-      navigate("/signup");
+      navigate("/login");
     } else {
       setEmail(storedEmail);
     }
   }, [navigate]);
 
   const otpVerifyMutation = useMutation({
-    mutationFn: () => apiRequest("POST", "/users/verify-otp", { email, otp }),
+    mutationFn: () => apiRequest("POST", "/users/verify-otp", { email, otp },{ auth: false }),
     onSuccess: () => {
       localStorage.removeItem("verifyEmail");
       message.success("OTP verified successfully!");
       navigate("/login");
     },
     onError: (error) => {
-      message.error(error.response?.data?.message || "OTP verification failed!");
+      message.error(error || "OTP verification failed!");
     },
   });
 
   const resendOtpMutation = useMutation({
-    mutationFn: () => apiRequest("POST", "/users/resend-otp", { email }),
+    mutationFn: () => apiRequest("POST", "/users/resend-otp", { email },{ auth: false }),
     onSuccess: () => {
       message.success("OTP resent successfully!");
     },
     onError: (error) => {
-      message.error(error.response?.data?.message || "Failed to resend OTP");
+      message.error(error || "Failed to resend OTP");  
     },
   });
 
@@ -69,7 +69,6 @@ const OtpVerification = () => {
                 placeholder="Enter OTP"
                 value={otp}
                 onChange={(e) => setOtp(e.target.value)}
-                style={{ background: "var(--primary-text)" }}
               />
             </Form.Item>
 

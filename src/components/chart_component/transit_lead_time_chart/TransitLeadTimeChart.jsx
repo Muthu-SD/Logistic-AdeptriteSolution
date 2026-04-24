@@ -2,11 +2,21 @@ import React, { useState } from "react";
 import ReactApexChart from "react-apexcharts";
 import { useQuery } from "@tanstack/react-query";
 import { fetchTransitLeadTimeData } from "./fetchTransitLeadTimeData";
-import { Select, Button, Modal, Spin } from "antd";
-import { ExpandOutlined } from "@ant-design/icons";
+import { Select, Button, Modal, Spin, DatePicker, Segmented } from "antd";
+import { ExpandOutlined, AreaChartOutlined, LineChartOutlined } from "@ant-design/icons";
 import NoDataFallback from "../../common/NoDataFallback";
+import { useOrganizationData } from "../../../hooks/useOrganizationData";
+import useStore from "../../../store/UseStore";
+import useResponsive from "../../../hooks/useResponsive";
+import dayjs from "dayjs";
+const { RangePicker } = DatePicker;
 
 const TransitLeadTimeChart = () => {
+  const { data: orgData } = useOrganizationData();
+  const { responsive } = useResponsive();
+  const theme = useStore((state) => state.theme);
+  const chartColor = theme === "dark" ? "#60a5fa" : "#3b82f6";
+  const title = orgData?.chartTitles?.transitLeadTime || "Transit Lead Time";
   const [isFullView, setIsFullView] = useState(false);
 
   const { data, isLoading } = useQuery({
@@ -21,9 +31,11 @@ const TransitLeadTimeChart = () => {
   const seriesData = chartData.map((item) => item.averageTransitTime);
 
   const chartOptions = {
+      theme: { mode: theme },
     chart: { 
       id: "transit-lead-time", 
       toolbar: { show: false },
+      background: "transparent",
           animations: {
       enabled: true,
       easing: "easeinout",
@@ -32,7 +44,17 @@ const TransitLeadTimeChart = () => {
         enabled: true,
         delay: 200,
       },
+          
     },
+    dropShadow: {
+        enabled: true,
+        // top: 8,
+        // right: 20,
+        // bottom: 15,
+        left: 15,
+        blur: 4,
+        opacity: 0.7,
+      },
     },
     xaxis: {
       categories,
@@ -45,7 +67,7 @@ const TransitLeadTimeChart = () => {
     yaxis: {
       title: {
         text: "Transit Lead Time (days)",
-        style: { fontSize: "10px", fontWeight: 600 },
+        style: { fontSize: "10px", fontWeight: 600, color: theme === "dark" ? "#e0e0e0" : "#333" },
       },
     },
     // title: {
@@ -53,7 +75,7 @@ const TransitLeadTimeChart = () => {
     //   style: { fontSize: "12px" },
     //   align: "center",
     // },
-    stroke: { curve: "smooth", width: 2, colors: ["#3b82f6"] },
+    stroke: { curve: "smooth", width:[6,5] , colors: [chartColor], lineCap: "round" },
     fill: {
       type: "gradient",
       gradient: {
@@ -62,8 +84,8 @@ const TransitLeadTimeChart = () => {
         opacityTo: 0.1,
         stops: [0, 90, 100],
         colorStops: [
-          { offset: 0, color: "#3b82f6", opacity: 0.4 },
-          { offset: 100, color: "#3b82f6", opacity: 0.1 },
+          { offset: 0, color: chartColor, opacity: 0.4 },
+          { offset: 100, color: chartColor, opacity: 0.1 },
         ],
       },
     },
@@ -80,7 +102,7 @@ const TransitLeadTimeChart = () => {
           alignItems: "center",
         }}
       >
-         <h6  style={{ fontSize: "12px", background:"#1A2F7E",color:"white",padding:"3px 3px" }}>Transit Lead Time</h6>
+         <h6  className="dashboard-chart-heading">{title}</h6>
         <Button  style={{ height: 18,width: 18, fontSize: "10px", }} icon={<ExpandOutlined />} onClick={() => setIsFullView(true)} />
       </div>
 
@@ -109,22 +131,32 @@ const TransitLeadTimeChart = () => {
           options={chartOptions}
           series={[{ name: "Transit Time", data: seriesData }]}
           type="area"
-          height={140}
+          height={responsive({ xs: 120, sm: 120, md: 130, lg: 140, xl: 140 })}
         />
       )}
 
-      <FullViewModal isOpen={isFullView} onClose={() => setIsFullView(false)} />
+      <FullViewModal isOpen={isFullView} onClose={() => setIsFullView(false)} title={title} theme={theme} />
     </div>
   );
 };
 
-const FullViewModal = ({ isOpen, onClose }) => {
+const FullViewModal = ({ isOpen, onClose, title, theme }) => {
+  const chartColor = theme === "dark" ? "#60a5fa" : "#3b82f6";
+  const { responsive: pick, isMobile } = useResponsive();
   const [groupBy, setGroupBy] = useState("Month");
+  const [chartType, setChartType] = useState("area");
   const [currentPage, setCurrentPage] = useState(0);
+  const [dateRange, setDateRange] = useState([
+    dayjs().subtract(12, "month"),
+    dayjs(),
+  ]);
+
+  const startDate = dateRange[0]?.format("YYYY-MM-DD");
+  const endDate = dateRange[1]?.format("YYYY-MM-DD");
 
   const { data = [], isLoading } = useQuery({
-    queryKey: ["full-transit-lead-time-data", groupBy],
-    queryFn: () => fetchTransitLeadTimeData(groupBy),
+    queryKey: ["full-transit-lead-time-data", groupBy, startDate, endDate],
+    queryFn: () => fetchTransitLeadTimeData(groupBy, startDate, endDate),
     refetchInterval: false, // Disable automatic refetching
     refetchOnWindowFocus: false, // Disable refetching on window focus
   });
@@ -141,9 +173,11 @@ const FullViewModal = ({ isOpen, onClose }) => {
   const seriesData = paginated.map((item) => item.averageTransitTime);
 
   const chartOptions = {
+    theme: { mode: theme },
     chart: { 
       id: "full-view-transit-chart", 
       toolbar: { show: false },
+      background: "transparent",
       animations: {
       enabled: true,
       easing: "easeinout",
@@ -153,30 +187,45 @@ const FullViewModal = ({ isOpen, onClose }) => {
         delay: 200,
       },
     },
+    dropShadow: {
+        enabled: true,
+        // top: 8,
+        // right: 20,
+        // bottom: 15,
+        left: 15,
+        blur: 4,
+        opacity: 0.7,
+      },
   },
     xaxis: { categories },
     yaxis: {
       title: {
         text: "Transit Lead Time (days)",
-        style: { fontSize: "20px", fontWeight: 600 },
+        style: { fontSize: pick({ xs: "11px", sm: "12px", md: "16px", lg: "18px", xl: "20px" }), fontWeight: 600, color: theme === "dark" ? "#e0e0e0" : "#333" },
       },
     },
     title: {
-      text: "Transit Lead Time",
-      style: { fontSize: "24px" },
+      text: title,
+      style: { fontSize: pick({ xs: "16px", md: "20px", xl: "24px" }), color: theme === "dark" ? "#e0e0e0" : "#333" },
       align: "center",
     },
-    stroke: { curve: "smooth", width: 2, colors: ["#3b82f6"] },
+    // stroke: { curve: "smooth", width: 2, colors: ["#3b82f6"] },
+    stroke: {
+      curve: chartType === "line" ? "straight" : "smooth",
+      width: [6, 5],
+      colors: [chartColor],
+      lineCap: "round",
+    },
     fill: {
-      type: "gradient",
+      type: chartType === "area" ? "gradient" : "solid",
       gradient: {
         shadeIntensity: 1,
         opacityFrom: 0.4,
         opacityTo: 0.1,
         stops: [0, 90, 100],
         colorStops: [
-          { offset: 0, color: "#3b82f6", opacity: 0.4 },
-          { offset: 100, color: "#3b82f6", opacity: 0.1 },
+          { offset: 0, color: chartColor, opacity: 0.4 },
+          { offset: 100, color: chartColor, opacity: 0.1 },
         ],
       },
     },
@@ -185,12 +234,12 @@ const FullViewModal = ({ isOpen, onClose }) => {
 
   return (
     <Modal
-      title="Full View - Transit Lead Time"
+      title={`Full View - ${title}`}
       open={isOpen}
       onCancel={onClose}
       footer={null}
       style={{ top: 0 }}
-      width="100vw"
+      width={pick({ xs: "100%", md: "95vw", lg: "100vw" })}
       height="100vh"
     >
       <div
@@ -198,31 +247,63 @@ const FullViewModal = ({ isOpen, onClose }) => {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          marginBottom: "16px",
+          marginBottom: pick({ xs: "8px", md: "12px", xl: "16px" }),
+          gap: "8px",
+          flexWrap: "wrap",
         }}
       >
-        <Select
-          value={groupBy}
-          onChange={(value) => {
-            setGroupBy(value);
-            setCurrentPage(0);
-          }}
-          options={[
-            { label: "Day", value: "Day" },
-            { label: "Week", value: "Week" },
-            { label: "Month", value: "Month" },
-            { label: "Year", value: "Year" },
-          ]}
-          style={{ width: 120 }}
-        />
+        <div style={{ display: "flex", gap: "8px", alignItems: "center", flexWrap: "wrap" }}>
+          <Select
+            value={groupBy}
+            onChange={(value) => {
+              setGroupBy(value);
+              setCurrentPage(0);
+            }}
+            options={[
+              { label: "Day", value: "Day" },
+              { label: "Week", value: "Week" },
+              { label: "Month", value: "Month" },
+              { label: "Year", value: "Year" },
+            ]}
+            style={{ width: pick({ xs: 90, sm: 100, md: 120, lg: 120, xl: 120 }) }}
+            size={isMobile ? "small" : "middle"}
+          />
+          <RangePicker
+            value={dateRange}
+            onChange={(dates) => {
+              setDateRange(dates || [dayjs().subtract(12, "month"), dayjs()]);
+              setCurrentPage(0);
+            }}
+            size={isMobile ? "small" : "middle"}
+            style={{ maxWidth: isMobile ? 220 : 300 }}
+          />
+          <Segmented
+            value={chartType}
+            onChange={(value) => setChartType(value)}
+            size={isMobile ? "small" : "middle"}
+            options={[
+              {
+                value: "area",
+                icon: <AreaChartOutlined />,
+                label: isMobile ? null : "Area",
+              },
+              {
+                value: "line",
+                icon: <LineChartOutlined />,
+                label: isMobile ? null : "Line",
+              },
+            ]}
+          />
+        </div>
 
         <div>
           <Button
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
             disabled={currentPage === 0}
-            style={{ marginRight: 8 }}
+            style={{ marginRight: pick({ xs: 4, md: 8 }) }}
+            size={isMobile ? "small" : "middle"}
           >
-            Previous
+           {isMobile ? "Prev" : "Previous"}
           </Button>
           <Button
             onClick={() =>
@@ -231,6 +312,7 @@ const FullViewModal = ({ isOpen, onClose }) => {
               )
             }
             disabled={(currentPage + 1) * itemsPerPage >= data.length}
+            size={isMobile ? "small" : "middle"}
           >
             Next
           </Button>
@@ -241,7 +323,7 @@ const FullViewModal = ({ isOpen, onClose }) => {
         <div
           style={{
             position: "relative",
-            minHeight: 500,
+            minHeight: pick({ xs: 200, md: 350, xl: 500 }),
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -261,8 +343,8 @@ const FullViewModal = ({ isOpen, onClose }) => {
         <ReactApexChart
           options={chartOptions}
           series={[{ name: "Transit Time", data: seriesData }]}
-          type="area"
-          height={500}
+          type={chartType}
+          height={pick({ xs: 280, sm: 320, md: 400, lg: 460, xl: 500 })}
         />
       )}
     </Modal>

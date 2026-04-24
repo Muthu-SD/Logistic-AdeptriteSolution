@@ -1,0 +1,47 @@
+.modalOuter .ant-modal-content {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.modalOuter .ant-modal-header {
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--layout-background);
+  margin-bottom: 16px;
+}
+
+.modalOuter .ant-modal-title {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.modalContent {
+  padding: 8px 0;
+}
+
+.modernInput {
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+
+.formActions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+/* --- SuperadminForms Responsive --- */
+@media (max-width: 767px) {
+  .modalContent {
+    padding: 4px 0;
+  }
+
+  .formActions {
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  .modalOuter .ant-modal-title {
+    font-size: 15px;
+  }
+}

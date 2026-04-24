@@ -1,18 +1,23 @@
 /* ------------------------------------------ common setup for css design -->START ------------------------------------ */
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+/* @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Manrope:wght@200..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap'); */
+
 *,
 *::before,
 *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  font-family: "Roboto Condensed", sans-serif;
+  /* font-family: "Inter", sans-serif ; */
+  /* -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale; */
 }
 
 html,
 body {
   scroll-behavior: smooth;
   overflow-x: hidden;
-  font-family: "Roboto", sans-serif;
-  /* Google font link is in html */
   background-color: var(--layout-background);
 }
 
@@ -45,73 +50,85 @@ button {
 :root {
   --bg: #000;
   --primary-text: #fff;
-  --btn-primary: #efefe4;
-  --btn-hover: #e67e6e;
-  --btn-succes: green;
-  --gradient1: linear-gradient(90deg, #628eff 0%, #8740cd 52%, #580475 100%);
-  /* --gradient1: linear-gradient(90deg, #7665ff 0%, #e065ff 100%); */
-  --gradient2: #a5a5a5;
-  --color-pink-bg: pink;
-  --color-pink-text: rgb(168, 168, 168);
-  --color-red-bg: rgb(255, 18, 58);
-  --color-red-text: rgb(122, 41, 98);
-  --color-blue-bg: pink;
-  --color-blue-text: rgb(42, 48, 134);
   /* LOGIN PAGE */
   --btn-login: #00b5e2;
   --btn-login-hover: #0093b1;
   --box-shadow-login: #595555;
-  /* SIGNOUT BUTTON*/
-  --btn-signout-hover: #313030;
-  /* THEME COLOR*/
   /* LAYOUT BACKGROUND */
   --layout-background: #e0e0e0;
-  /* SIDEBAR */
-  --sidebar-bg: #a5a5a5;
-  --sidebar-menu-bg1: #101820;
-  --sidebar-menu-bg2: transparent;
-  --siebar-menu-text: #222222;
-  /* DonutChart3 */
-  --donut-chart-color1_t1: #8740cd;
-  --donut-chart-color2_t1: #628eff;
-  --donut-chart-color1_t2: #344966;
-  --donut-chart-color2_t2: #b8b8b8;
-  /* StackedGraph_1 */
-  --stackedGraph1-color1_t1: rgba(255, 171, 189, 0.75);
-  --stackedGraph1-color2_t1: rgba(255, 12, 216, 0.39);
-  --stackedGraph1-color3_t1: #8740cd;
-  /* --stackedGraph1-color3_t1:linear-gradient(circle, #60F2F2 0%, #10ADD0 100%); */
-  --stackedGraph1-color1_t2: #4084b3;
-  --stackedGraph1-color2_t2: #b4cded;
-  --stackedGraph1-color3_t2: #919191;
-  /* StackedGraph_2 */
-  --stackedGraph2-color1_t1: rgba(98, 142, 255, 0.8);
-  --stackedGraph2-color2_t1: rgba(135, 64, 205, 0.6);
-  --stackedGraph2-color3_t1: rgba(88, 4, 117, 0.7);
-  --stackedGraph2-color4_t1: rgba(141, 170, 244, 0.85);
-  --stackedGraph2-color5_t1: #0037d6;
-  /* --stackedGraph2-color3_t1:linear-gradient(circle, #60F2F2 0%, #10ADD0 100%); */
-  --stackedGraph2-color1_t2: rgba(255, 85, 85, 0.8);
-  --stackedGraph2-color2_t2: rgba(85, 255, 85, 0.8);
-  --stackedGraph2-color3_t2: rgba(85, 85, 255, 0.8);
-  --stackedGraph2-color4_t2: rgba(170, 170, 170, 0.8);
-  --stackedGraph2-color5_t2: rgba(0, 0, 139, 0.8);
-  /* ----------------------------------------------- All 6 chart color --------------------------------------------------- */
-  /* TransitLeadTimeChart */
-  --transitLeadTime-color1_t1: #3B82F6;
-  --transitLeadTime-color1_t2: #344966;
-  /* ClearanceLeadTimeChart */
+  --dashboard-background: #00b5e2;
+  /* COMMON COLOR*/
+  --table-header-bg: #00b5e2;
+  --table-header-text: #ffff;
+  --table-body-bg: #F3F3F3;
+  --table-body-text: #0F172A;
+  --table-hover-bg: #e5e7eb;
+  --chart-heading-text: #444444;
+  --chart-heading-bg: #FFFFFF;
+  --chart-heading-shadow: 1px 0px 1px #CCCCCC, 0px 1px 1px #EEEEEE, 2px 1px 1px #CCCCCC, 1px 2px 1px #EEEEEE, 3px 2px 1px #CCCCCC, 2px 3px 1px #EEEEEE, 4px 3px 1px #CCCCCC, 3px 4px 1px #EEEEEE, 5px 4px 1px #CCCCCC, 4px 5px 1px #EEEEEE, 6px 5px 1px #CCCCCC, 5px 6px 1px #EEEEEE, 7px 6px 1px #CCCCCC;
+  --header-bg: #ffffff;
+  --marquee-text: #333333;
+  --overlay-bg: rgba(255, 255, 255, 0.8);
+  --card-bg: #ffffff;
+  --theme-toggle-bg: #f0f0f0;
+  --theme-toggle-shadow: 0 0 10px rgba(250, 173, 20, 0.5);
+  --logo-filter: none;
+  --auth-form-bg: #ffffff;
+  --auth-form-text: #333333;
+}
+
+[data-theme="dark"] {
+  --layout-background: #141414;
+  --dashboard-background: #002833;
+  --table-header-bg: #004d61;
+  --table-header-text: #e0e0e0;
+  --table-body-bg: #1f1f1f;
+  --table-body-text: #d0d0d0;
+  --table-hover-bg: #2d2d2d;
+  --chart-heading-text: #e0e0e0;
+  --chart-heading-bg: #1f1f1f;
+  --chart-heading-shadow: none;
+  --header-bg: #141414;
+  --marquee-text: #e0e0e0;
+  --overlay-bg: rgba(0, 0, 0, 0.8);
+  --card-bg: #1f1f1f;
+  --theme-toggle-bg: #333333;
+  --theme-toggle-shadow: 0 0 10px rgba(24, 144, 255, 0.5);
+  --logo-filter: invert(1);
+  --auth-form-bg: #1f1f1f;
+  --auth-form-text: #e0e0e0;
 }
 
 /* ------------------------------------------ custom colors for Dashboard-app --> END ------------------------------------ */
+
+/* ---------------------------- Dashboard --START ---------------------------*/
+.dashboard-container {
+  padding: 10px;
+  background: var(--dashboard-background);
+}
+
+/* ---------------------------- Dashboard --END ---------------------------*/
 
 /* ---------------------------- ANT Table --START ---------------------------*/
 
 /* Ant Design table header */
 .ant-table-thead>tr>th {
-  background-color: #EAF7FC !important;
+  background-color: var(--table-header-bg) !important;
+  padding: 8px 16px !important;
+  color: var(--table-header-text) !important;
   /* padding-bottom: 2px !important;
   padding-top: 2px !important; */
+}
+
+/* Ant Design table body */
+.ant-table-tbody>tr>td {
+  background-color: var(--table-body-bg);
+  color: var(--table-body-text);
+}
+
+/* Hover effect */
+.ant-table .ant-table-tbody>tr:hover>td {
+  background-color: var(--table-hover-bg) !important;
 }
 
 /* Ant Design table x-scroll */
@@ -131,23 +148,189 @@ button {
 } */
 
 /* Only affect dashboard table, not modal/full view -------START */
+.dashboard-table-compact {
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  border-radius: 8px;
+}
+
+/* Header styling */
 .dashboard-table-compact .ant-table-thead>tr>th {
-  background-color: #EAF7FC !important;
-  padding-bottom: 2px !important;
-  padding-top: 2px !important;
+  background-color: var(--table-header-bg) !important;
+  padding: 8px 16px !important;
+  color: var(--table-header-text);
+  font-size: 14px;
+  font-weight: 600;
 }
 
-.dashboard-table-compact .ant-table-tbody>tr>td {
-  padding-top: 0px !important;
-  padding-bottom: 0px !important;
+/* Body row styling */
+.dashboard-table-compact .ant-table-tbody>tr>.ant-table-cell {
+  background-color: var(--table-body-bg);
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
+  font-size: 14px;
+  color: var(--table-body-text);
 }
 
+/* Hover effect */
+.dashboard-table-compact .ant-table-tbody>tr:hover>td {
+  background-color: var(--table-hover-bg) !important;
+}
+
+/* Hide vertical scrollbar */
 /* Hide (but keep) vertical scrollbar for dashboard table  */
 .dashboard-table-compact .ant-table-body {
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
 }
 
+.dashboard-table-compact .ant-table-body::-webkit-scrollbar {
+  display: none;
+  /* Chrome, Safari, Opera */
+}
+
+/* Remove default table borders */
+/* .dashboard-table-compact .ant-table-container {
+  border: none;
+}
+
+.dashboard-table-compact .ant-table {
+  background: transparent;
+} */
 /* Only affect dashboard table, not modal/full view ------END */
 
 /* ---------------------------- ANT Table--END ---------------------------*/
+
+/* ---------------------------- h6 heading style in all 9chart in dashboard--START ---------------------------*/
+
+.dashboard-chart-heading {
+  font-size: 14px;
+  padding: 3px 6px;
+  border-radius: 8px;
+  font-weight: 600;
+  color: var(--chart-heading-text);
+  background: var(--chart-heading-bg);
+  text-shadow: var(--chart-heading-shadow);
+}
+
+/* ---------------------------- h6 heading style in all 9chart in dashboard--END ---------------------------*/
+
+/* ---------------------------- Global Ant Design Message / Notification Theme Override ---------------------------*/
+[data-theme="dark"] .ant-message-notice-content {
+  background-color: #1f1f1f !important;
+  color: #e0e0e0 !important;
+  box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.8), 0 3px 6px -4px rgba(0, 0, 0, 0.8), 0 9px 28px 8px rgba(0, 0, 0, 0.8) !important;
+}
+
+[data-theme="dark"] .ant-notification-notice {
+  background-color: #1f1f1f !important;
+  color: #e0e0e0 !important;
+  box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.8) !important;
+}
+
+[data-theme="dark"] .ant-notification-notice-message,
+[data-theme="dark"] .ant-notification-notice-description {
+  color: #e0e0e0 !important;
+}
+
+/* ---------------------------- Global Ant Design Message / Notification Theme Override --END ---------------------------*/
+
+/* ============================== RESPONSIVE MEDIA QUERIES --START ============================== */
+
+/* --- Mobile (320px – 767px) --- */
+@media (max-width: 767px) {
+  .dashboard-container {
+    padding: 6px;
+  }
+
+  .dashboard-chart-heading {
+    font-size: 11px;
+    padding: 2px 4px;
+  }
+
+  .dashboard-table-compact .ant-table-thead>tr>th {
+    padding: 4px 8px !important;
+    font-size: 11px;
+  }
+
+  .dashboard-table-compact .ant-table-tbody>tr>.ant-table-cell {
+    padding-top: 4px !important;
+    padding-bottom: 4px !important;
+    font-size: 11px;
+  }
+
+  .ant-table-thead>tr>th {
+    padding: 6px 8px !important;
+    font-size: 12px;
+  }
+
+  .ant-table-tbody>tr>td {
+    font-size: 12px;
+  }
+
+  /* Ant Design modal responsive */
+  .ant-modal {
+    max-width: calc(100vw - 16px) !important;
+    margin: 8px auto !important;
+  }
+
+  .ant-modal .ant-modal-body {
+    padding: 12px !important;
+  }
+
+  .ant-modal .ant-modal-header {
+    padding: 12px 16px !important;
+  }
+
+  .ant-modal-title {
+    font-size: 14px !important;
+  }
+}
+
+/* --- Tablet (768px – 1023px) --- */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .dashboard-container {
+    padding: 8px;
+  }
+
+  .dashboard-chart-heading {
+    font-size: 12px;
+    padding: 2px 5px;
+  }
+
+  .dashboard-table-compact .ant-table-thead>tr>th {
+    padding: 6px 10px !important;
+    font-size: 12px;
+  }
+
+  .dashboard-table-compact .ant-table-tbody>tr>.ant-table-cell {
+    padding-top: 6px !important;
+    padding-bottom: 6px !important;
+    font-size: 12px;
+  }
+}
+
+/* --- Laptop (1024px – 1439px) --- */
+@media (min-width: 1024px) and (max-width: 1439px) {
+  .dashboard-container {
+    padding: 10px;
+  }
+
+  .dashboard-chart-heading {
+    font-size: 13px;
+  }
+}
+
+/* --- Desktop (1440px+) --- */
+@media (min-width: 1440px) {
+  .dashboard-container {
+    padding: 12px;
+  }
+
+  .dashboard-chart-heading {
+    font-size: 14px;
+  }
+}
+
+/* ============================== RESPONSIVE MEDIA QUERIES --END ============================== */

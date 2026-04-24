@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Form, Input, Button, message } from "antd";
 import { useNavigate, Link } from "react-router-dom";
 import Styles from "../styles/auth/AuthForm.module.css";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "../utils/Api";
-import logo from "../assets/Logo3.png"; // Import logo
+import logo from "../assets/Logo.png"; // Import logo
 import illustrator from "../assets/login/Illustrator.svg"; // Import illustration
 
 const ForgotPassword = () => {
@@ -12,9 +12,9 @@ const ForgotPassword = () => {
   const [email, setEmail] = useState("");
 
   const forgotPasswordMutation = useMutation({
-    mutationFn: () => apiRequest("POST", "/users/forgot-password", { email }),
+    mutationFn: () => apiRequest("POST", "/users/forgot-password", { email },{ auth: false }),
     onSuccess: () => {
-      alert("OTP sent to your email.");
+      message.success("OTP sent to your email.");
       navigate("/reset-password", { state: { email } }); // Navigate with email
     },
     onError: (error) => alert(error),
@@ -65,9 +65,6 @@ const ForgotPassword = () => {
               <Input
                 type="email"
                 placeholder="Email"
-                style={{
-                  background:"var(--primary-text)",
-                }}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
