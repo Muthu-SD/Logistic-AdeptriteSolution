@@ -256,6 +256,7 @@ const CountryWiseVolumeChart = () => {
               );
               setCurrentPage(0);
             }}
+            format="DD-MM-YYYY"
           />
 
           <div>

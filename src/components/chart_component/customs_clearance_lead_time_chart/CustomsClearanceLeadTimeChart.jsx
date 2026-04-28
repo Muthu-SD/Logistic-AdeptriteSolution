@@ -306,6 +306,7 @@ const FullViewModal = ({ isOpen, onClose, title, theme }) => {
               setDateRange(dates || [dayjs().subtract(12, "month"), dayjs()]);
               setCurrentPage(0);
             }}
+            format="DD-MM-YYYY"
             size={isMobile ? "small" : "middle"}
             style={{ maxWidth: isMobile ? 220 : 300 }}
           />

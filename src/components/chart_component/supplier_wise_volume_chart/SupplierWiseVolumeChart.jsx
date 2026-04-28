@@ -282,6 +282,7 @@ const fullSeries = currentGroupData.map((item) => item.volume);
               );
               setCurrentPage(0);
             }}
+            format="DD-MM-YYYY"
           />
 
           <Button 

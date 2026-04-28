@@ -111,6 +111,7 @@ const TotalShipmentsHandledChart = () => {
         },
       },
     },
+    colors: [theme === "dark" ? "#60a5fa" : "#3b82f6"],
     tooltip: {
       y: { formatter: (value) => `${value}` },
     },
@@ -160,6 +161,7 @@ const TotalShipmentsHandledChart = () => {
         },
       },
     },
+    colors: [theme === "dark" ? "#60a5fa" : "#3b82f6"],
     tooltip: {
       y: { formatter: (value) => `${value}` },
     },
@@ -268,6 +270,7 @@ const TotalShipmentsHandledChart = () => {
               setDateRange(dates || [dayjs().subtract(12, "month"), dayjs()]);
               setCurrentPage(0);
             }}
+            format="DD-MM-YYYY"
             style={{ maxWidth: 300 }}
           />
           <div>
