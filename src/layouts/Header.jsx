@@ -1,13 +1,13 @@
 import { useState } from "react";
 import useResponsive from "../hooks/useResponsive";
 import { Avatar, Dropdown, message, Select } from "antd";
-import { UserOutlined, UserAddOutlined, ImportOutlined, DownloadOutlined, LogoutOutlined, ApartmentOutlined, EditOutlined, MoonOutlined, SunOutlined } from "@ant-design/icons";
+import { UserOutlined, UserAddOutlined, ImportOutlined, DownloadOutlined, LogoutOutlined, ApartmentOutlined, EditOutlined, MoonOutlined, SunOutlined, MenuOutlined } from "@ant-design/icons";
 import useStore from "../store/UseStore";
 import { useOrganizationData } from "../hooks/useOrganizationData";
 import { useNavigate } from "react-router-dom";
 import styles from "../styles/Header.module.css";
 import ImportExcel from "../components/ImportExcel";
-import logo from "../assets/Logo3.png";
+// import logo from "../assets/Logo3.png";
 import CurrentInfoMarquee from "../components/marquee/CurrentInfoMarquee";
 import { downloadFile } from "../utils/Api";
 import { useQueryClient } from "@tanstack/react-query";
@@ -16,7 +16,7 @@ import CreateUser from "../pages/superadmin/CreateUser";
 import EditOrganizationTitles from "../pages/superadmin/EditOrganizationTitles";
 
 
-const Header = ({ organizations = [] }) => {
+const Header = ({ organizations = [], onToggleSidebar }) => {
   const queryClient = useQueryClient();
   const { isMobile, responsive } = useResponsive();
 
@@ -136,7 +136,15 @@ const handleOrgChange = (orgId) => {
 
   return (
     <div className={styles.header}>
-      <img src={logo} alt="Logo" className={styles.logo} />
+      <div className={styles.headerLeft}>
+        <button
+          className={styles.sidebarToggle}
+          onClick={onToggleSidebar}
+          aria-label="Toggle sidebar"
+        >
+          <MenuOutlined />
+        </button>
+      </div>
       {/* Marquee displayed on the header */}
       <CurrentInfoMarquee />
       <div style={{ display: "flex", alignItems: "center", gap: responsive({ xs: 4, sm: 6, md: 10, lg: 12, xl: 12 }), flexShrink: 0 }}>

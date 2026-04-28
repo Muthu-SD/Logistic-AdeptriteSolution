@@ -51,55 +51,110 @@ button {
   --bg: #000;
   --primary-text: #fff;
   /* LOGIN PAGE */
-  --btn-login: #00b5e2;
-  --btn-login-hover: #0093b1;
+  --btn-login: #7B3FA0;
+  --btn-login-hover: #5B2D8E;
   --box-shadow-login: #595555;
   /* LAYOUT BACKGROUND */
-  --layout-background: #e0e0e0;
-  --dashboard-background: #00b5e2;
+  --layout-background: #F0ECF5;
+  --dashboard-background: #7B3FA0;
   /* COMMON COLOR*/
-  --table-header-bg: #00b5e2;
-  --table-header-text: #ffff;
-  --table-body-bg: #F3F3F3;
-  --table-body-text: #0F172A;
-  --table-hover-bg: #e5e7eb;
-  --chart-heading-text: #444444;
+  --table-header-bg: #5B2D8E;
+  --table-header-text: #ffffff;
+  --table-body-bg: #FAF8FC;
+  --table-body-text: #2D1B4E;
+  --table-hover-bg: #F0E8F8;
+  --chart-heading-text: #3D1A5E;
   --chart-heading-bg: #FFFFFF;
-  --chart-heading-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  --chart-heading-shadow: 0 1px 3px rgba(91, 45, 142, 0.1);
   --header-bg: #ffffff;
-  --marquee-text: #333333;
-  --overlay-bg: rgba(255, 255, 255, 0.8);
+  --marquee-text: #4A2068;
+  --overlay-bg: rgba(255, 255, 255, 0.85);
   --card-bg: #ffffff;
   --theme-toggle-bg: #f0f0f0;
-  --theme-toggle-shadow: 0 0 10px rgba(250, 173, 20, 0.5);
+  --theme-toggle-shadow: 0 0 10px rgba(245, 166, 35, 0.5);
   --logo-filter: none;
   --auth-form-bg: #ffffff;
   --auth-form-text: #333333;
 }
 
 [data-theme="dark"] {
-  --layout-background: #141414;
-  --dashboard-background: #002833;
-  --table-header-bg: #004d61;
-  --table-header-text: #e0e0e0;
-  --table-body-bg: #1f1f1f;
-  --table-body-text: #d0d0d0;
-  --table-hover-bg: #2d2d2d;
-  --chart-heading-text: #e0e0e0;
-  --chart-heading-bg: #1f1f1f;
+  --layout-background: #0D0815;
+  --dashboard-background: #130E1F;
+  --table-header-bg: #3D1B5E;
+  --table-header-text: #E8E0F0;
+  --table-body-bg: #1A1225;
+  --table-body-text: #D4CADF;
+  --table-hover-bg: #251A35;
+  --chart-heading-text: #E0D8EA;
+  --chart-heading-bg: #1A1225;
   --chart-heading-shadow: none;
-  --header-bg: #141414;
-  --marquee-text: #e0e0e0;
-  --overlay-bg: rgba(0, 0, 0, 0.8);
-  --card-bg: #1f1f1f;
-  --theme-toggle-bg: #333333;
-  --theme-toggle-shadow: 0 0 10px rgba(24, 144, 255, 0.5);
+  --header-bg: #110D1A;
+  --marquee-text: #D8D0E4;
+  --overlay-bg: rgba(15, 10, 25, 0.85);
+  --card-bg: #1A1225;
+  --theme-toggle-bg: #2A1E3A;
+  --theme-toggle-shadow: 0 0 10px rgba(245, 166, 35, 0.4);
   --logo-filter: invert(1);
-  --auth-form-bg: #1f1f1f;
-  --auth-form-text: #e0e0e0;
+  --auth-form-bg: #1A1225;
+  --auth-form-text: #E0D8EA;
 }
 
 /* ------------------------------------------ custom colors for Dashboard-app --> END ------------------------------------ */
+
+/* ------------------------------------------ Fullview Modal / Dropdown Z-index Fix --> START ------------------------------------ */
+/* Ensure modals & dropdowns render ABOVE sidebar (z-index: 1100) */
+.ant-modal-root .ant-modal-wrap {
+  z-index: 1200 !important;
+}
+
+.ant-modal-root .ant-modal-mask {
+  z-index: 1199 !important;
+}
+
+.ant-dropdown {
+  z-index: 1200 !important;
+}
+
+.ant-select-dropdown {
+  z-index: 1200 !important;
+}
+
+.ant-picker-dropdown {
+  z-index: 1200 !important;
+}
+
+/* Dark mode – Ant modal body sync with purple theme */
+[data-theme="dark"] .ant-modal .ant-modal-content {
+  background-color: #1A1225 !important;
+  color: #D4CADF !important;
+}
+
+[data-theme="dark"] .ant-modal .ant-modal-header {
+  background-color: #1A1225 !important;
+  border-bottom-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+[data-theme="dark"] .ant-modal .ant-modal-title {
+  color: #E0D8EA !important;
+}
+
+[data-theme="dark"] .ant-modal .ant-modal-close {
+  color: #D4CADF !important;
+}
+
+/* Dark mode – Ant dropdown sync */
+[data-theme="dark"] .ant-dropdown .ant-dropdown-menu {
+  background-color: #1A1225 !important;
+}
+
+[data-theme="dark"] .ant-dropdown .ant-dropdown-menu-item {
+  color: #D4CADF !important;
+}
+
+[data-theme="dark"] .ant-dropdown .ant-dropdown-menu-item:hover {
+  background-color: #251A35 !important;
+}
+/* ------------------------------------------ Fullview Modal / Dropdown Z-index Fix --> END ------------------------------------ */
 
 /* ---------------------------- Dashboard --START ---------------------------*/
 .dashboard-container {
@@ -218,20 +273,20 @@ button {
 
 /* ---------------------------- Global Ant Design Message / Notification Theme Override ---------------------------*/
 [data-theme="dark"] .ant-message-notice-content {
-  background-color: #1f1f1f !important;
-  color: #e0e0e0 !important;
+  background-color: #1A1225 !important;
+  color: #D4CADF !important;
   box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.8), 0 3px 6px -4px rgba(0, 0, 0, 0.8), 0 9px 28px 8px rgba(0, 0, 0, 0.8) !important;
 }
 
 [data-theme="dark"] .ant-notification-notice {
-  background-color: #1f1f1f !important;
-  color: #e0e0e0 !important;
+  background-color: #1A1225 !important;
+  color: #D4CADF !important;
   box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.8) !important;
 }
 
 [data-theme="dark"] .ant-notification-notice-message,
 [data-theme="dark"] .ant-notification-notice-description {
-  color: #e0e0e0 !important;
+  color: #E0D8EA !important;
 }
 
 /* ---------------------------- Global Ant Design Message / Notification Theme Override --END ---------------------------*/

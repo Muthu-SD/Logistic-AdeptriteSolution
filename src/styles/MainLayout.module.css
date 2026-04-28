@@ -1,7 +1,77 @@
 @import url(".././index.css");
 
-.headerContainer {
+.appLayout {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  position: relative;
+}
+
+.mainContent {
   height: 100vh;
   overflow: auto;
   flex: 1;
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+/* ---- Desktop expanded (default) ---- */
+.contentExpanded {
+  margin-left: 260px;
+}
+
+/* ---- Desktop collapsed ---- */
+.contentCollapsed {
+  margin-left: 74px;
+}
+
+/* ---- Mobile (no margin, sidebar overlays) ---- */
+.contentMobile {
+  margin-left: 0;
+}
+
+/* ================================================================
+   RESPONSIVE OVERRIDES
+   Match sidebar widths from Sidebar.module.css
+   ================================================================ */
+
+/* --- Mobile (< 768px) --- */
+@media (max-width: 767px) {
+  .contentExpanded,
+  .contentCollapsed {
+    margin-left: 0;
+  }
+}
+
+/* --- Tablet (768px – 1023px) --- */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .contentExpanded {
+    margin-left: 256px;
+  }
+
+  .contentCollapsed {
+    margin-left: 68px;
+  }
+}
+
+/* --- Laptop (1024px – 1439px) --- */
+@media (min-width: 1024px) and (max-width: 1439px) {
+  .contentExpanded {
+    margin-left: 250px;
+  }
+
+  .contentCollapsed {
+    margin-left: 70px;
+  }
+}
+
+/* --- Desktop (1440px+) --- */
+@media (min-width: 1440px) {
+  .contentExpanded {
+    margin-left: 260px;
+  }
+
+  .contentCollapsed {
+    margin-left: 74px;
+  }
+}
+
