@@ -71,6 +71,8 @@ const MainLayout = () => {
           organizations={organizations}
           onToggleSidebar={handleToggleSidebar}
           isMobile={isMobile}
+          sidebarCollapsed={sidebarCollapsed}
+          sidebarMobileOpen={sidebarMobileOpen}
         />
         <Dashboard />
       </div>

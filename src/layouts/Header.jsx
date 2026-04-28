@@ -1,7 +1,7 @@
 import { useState } from "react";
 import useResponsive from "../hooks/useResponsive";
 import { Avatar, Dropdown, message, Select } from "antd";
-import { UserOutlined, UserAddOutlined, ImportOutlined, DownloadOutlined, LogoutOutlined, ApartmentOutlined, EditOutlined, MoonOutlined, SunOutlined, MenuOutlined } from "@ant-design/icons";
+import { UserOutlined, UserAddOutlined, ImportOutlined, DownloadOutlined, LogoutOutlined, ApartmentOutlined, EditOutlined, MoonOutlined, SunOutlined, MenuOutlined, MenuFoldOutlined, MenuUnfoldOutlined, CloseOutlined } from "@ant-design/icons";
 import useStore from "../store/UseStore";
 import { useOrganizationData } from "../hooks/useOrganizationData";
 import { useNavigate } from "react-router-dom";
@@ -16,7 +16,7 @@ import CreateUser from "../pages/superadmin/CreateUser";
 import EditOrganizationTitles from "../pages/superadmin/EditOrganizationTitles";
 
 
-const Header = ({ organizations = [], onToggleSidebar }) => {
+const Header = ({ organizations = [], onToggleSidebar, sidebarCollapsed, sidebarMobileOpen }) => {
   const queryClient = useQueryClient();
   const { isMobile, responsive } = useResponsive();
 
@@ -140,9 +140,27 @@ const handleOrgChange = (orgId) => {
         <button
           className={styles.sidebarToggle}
           onClick={onToggleSidebar}
-          aria-label="Toggle sidebar"
+          aria-label={
+            isMobile
+              ? sidebarMobileOpen
+                ? "Close sidebar"
+                : "Open sidebar"
+              : sidebarCollapsed
+              ? "Open sidebar"
+              : "Collapse sidebar"
+          }
         >
-          <MenuOutlined />
+          {isMobile ? (
+            sidebarMobileOpen ? (
+              <CloseOutlined />
+            ) : (
+              <MenuOutlined />
+            )
+          ) : sidebarCollapsed ? (
+            <MenuUnfoldOutlined />
+          ) : (
+            <MenuFoldOutlined />
+          )}
         </button>
       </div>
       {/* Marquee displayed on the header */}
