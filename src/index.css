@@ -56,7 +56,7 @@ button {
   --box-shadow-login: #595555;
   /* LAYOUT BACKGROUND */
   --layout-background: #F0ECF5;
-  --dashboard-background: #7B3FA0;
+  /* --dashboard-background: #7B3FA0; */
   /* COMMON COLOR*/
   --table-header-bg: #5B2D8E;
   --table-header-text: #ffffff;
@@ -79,7 +79,7 @@ button {
 
 [data-theme="dark"] {
   --layout-background: #0D0815;
-  --dashboard-background: #130E1F;
+  /* --dashboard-background: #130E1F; */
   --table-header-bg: #3D1B5E;
   --table-header-text: #E8E0F0;
   --table-body-bg: #1A1225;
@@ -159,7 +159,7 @@ button {
 /* ---------------------------- Dashboard --START ---------------------------*/
 .dashboard-container {
   padding: 10px;
-  background: var(--dashboard-background);
+  /* background: var(--dashboard-background); */
 }
 
 /* ---------------------------- Dashboard --END ---------------------------*/
