@@ -75,6 +75,35 @@ button {
   --logo-filter: none;
   --auth-form-bg: #ffffff;
   --auth-form-text: #333333;
+
+  /* ---- AUTH PREMIUM UI TOKENS ---- */
+  --auth-page-bg: #F0ECF5;
+  --auth-page-gradient: linear-gradient(135deg, #F0ECF5 0%, #E4DBF0 50%, #D6CBE8 100%);
+  --auth-card-bg: rgba(255, 255, 255, 0.82);
+  --auth-card-border: rgba(123, 63, 160, 0.12);
+  --auth-card-shadow: 0 8px 32px rgba(91, 45, 142, 0.10), 0 2px 8px rgba(0,0,0,0.04);
+  --auth-card-backdrop: blur(18px) saturate(1.6);
+  --auth-title-color: #2D1B4E;
+  --auth-subtitle-color: #6B5B7B;
+  --auth-input-bg: rgba(245, 240, 252, 0.7);
+  --auth-input-border: rgba(123, 63, 160, 0.18);
+  --auth-input-border-focus: #7B3FA0;
+  --auth-input-text: #2D1B4E;
+  --auth-input-placeholder: #9A8CB0;
+  --auth-input-shadow-focus: 0 0 0 3px rgba(123, 63, 160, 0.10);
+  --auth-btn-gradient: linear-gradient(135deg, #7B3FA0 0%, #9B59B6 50%, #7B3FA0 100%);
+  --auth-btn-shadow: 0 4px 15px rgba(123, 63, 160, 0.30);
+  --auth-btn-shadow-hover: 0 6px 25px rgba(123, 63, 160, 0.45);
+  --auth-btn-text: #ffffff;
+  --auth-link-color: #7B3FA0;
+  --auth-link-hover: #5B2D8E;
+  --auth-divider-color: rgba(123, 63, 160, 0.12);
+  --auth-icon-color: #7B3FA0;
+  --auth-icon-bg: rgba(123, 63, 160, 0.08);
+  --auth-logo-max-width: 180px;
+  --auth-accent-glow: rgba(123, 63, 160, 0.06);
+  --auth-resend-color: #7B3FA0;
+  --auth-resend-hover: #5B2D8E;
 }
 
 [data-theme="dark"] {
@@ -97,6 +126,34 @@ button {
   --logo-filter: invert(1);
   --auth-form-bg: #1A1225;
   --auth-form-text: #E0D8EA;
+
+  /* ---- AUTH PREMIUM UI TOKENS (DARK) ---- */
+  --auth-page-bg: #0D0815;
+  --auth-page-gradient: linear-gradient(135deg, #0D0815 0%, #150E22 50%, #1A1230 100%);
+  --auth-card-bg: rgba(26, 18, 37, 0.78);
+  --auth-card-border: rgba(123, 63, 160, 0.18);
+  --auth-card-shadow: 0 8px 32px rgba(0, 0, 0, 0.40), 0 2px 8px rgba(123, 63, 160, 0.08);
+  --auth-card-backdrop: blur(20px) saturate(1.4);
+  --auth-title-color: #E8E0F0;
+  --auth-subtitle-color: #A898BE;
+  --auth-input-bg: rgba(30, 22, 45, 0.8);
+  --auth-input-border: rgba(123, 63, 160, 0.22);
+  --auth-input-border-focus: #9B59B6;
+  --auth-input-text: #E0D8EA;
+  --auth-input-placeholder: #6B5B7B;
+  --auth-input-shadow-focus: 0 0 0 3px rgba(155, 89, 182, 0.15);
+  --auth-btn-gradient: linear-gradient(135deg, #7B3FA0 0%, #9B59B6 50%, #7B3FA0 100%);
+  --auth-btn-shadow: 0 4px 15px rgba(123, 63, 160, 0.35);
+  --auth-btn-shadow-hover: 0 6px 25px rgba(155, 89, 182, 0.50);
+  --auth-btn-text: #ffffff;
+  --auth-link-color: #B07FD0;
+  --auth-link-hover: #C9A0E8;
+  --auth-divider-color: rgba(123, 63, 160, 0.15);
+  --auth-icon-color: #B07FD0;
+  --auth-icon-bg: rgba(123, 63, 160, 0.12);
+  --auth-accent-glow: rgba(123, 63, 160, 0.10);
+  --auth-resend-color: #B07FD0;
+  --auth-resend-hover: #C9A0E8;
 }
 
 /* ------------------------------------------ custom colors for Dashboard-app --> END ------------------------------------ */

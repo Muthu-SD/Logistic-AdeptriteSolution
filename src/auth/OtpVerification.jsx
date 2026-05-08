@@ -6,8 +6,10 @@ import { useNavigate } from "react-router-dom";
 import Styles from "../styles/auth/AuthForm.module.css";
 import logo from "../assets/Logo.png";
 import illustrator from "../assets/login/Illustrator.svg";
+import useResponsive from "../hooks/useResponsive";
 
 const OtpVerification = () => {
+  const { isMobile } = useResponsive();
   const navigate = useNavigate();
   const [otp, setOtp] = useState("");
   const [email, setEmail] = useState("");
@@ -48,9 +50,7 @@ const OtpVerification = () => {
     <div className={Styles.pageWrapper}>
       <div className={Styles.imageFormWrapper}>
         <div className={Styles.imageSection}>
-          <center>
-            <img src={logo} alt="Logo" className={Styles.logo} />
-          </center>
+          <img src={logo} alt="Logo" className={Styles.logo} />
           <img src={illustrator} alt="Illustrator" className={Styles.illustrator} />
         </div>
         <div className={Styles.formWrapper}>
@@ -59,7 +59,15 @@ const OtpVerification = () => {
             onFinish={otpVerifyMutation.mutate}
             className={Styles.formContainer}
           >
+            {/* Mobile-only logo */}
+            {isMobile && (
+              <img src={logo} alt="Logo" className={Styles.mobileLogo} />
+            )}
+
             <h2 className={Styles.formTitle}>Verify OTP</h2>
+            <p className={Styles.formSubtitle}>
+              Enter the verification code sent to your email
+            </p>
 
             <Form.Item
               name="otp"
@@ -72,9 +80,10 @@ const OtpVerification = () => {
               />
             </Form.Item>
 
-            <div style={{ textAlign: "right", marginBottom: "1rem" }}>
+            <div className={Styles.resendWrapper}>
               <Button
                 type="link"
+                className={Styles.resendBtn}
                 onClick={() => resendOtpMutation.mutate()}
                 disabled={resendOtpMutation.isLoading}
               >
@@ -82,7 +91,7 @@ const OtpVerification = () => {
               </Button>
             </div>
 
-            <Form.Item style={{ textAlign: "center" , marginTop: "32px" }}>
+            <Form.Item style={{ marginBottom: 0 }}>
               <Button
                 className={Styles.button_login}
                 htmlType="submit"

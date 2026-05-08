@@ -15,7 +15,7 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [turnstileToken, setTurnstileToken] = useState(null);
-  const { setAuth } = useStore(); 
+  const { setAuth, theme } = useStore(); 
   const navigate = useNavigate(); 
 
   useEffect(() => {
@@ -71,10 +71,7 @@ const Login = () => {
     <div className={Styles.pageWrapper}>
       <div className={Styles.imageFormWrapper}>
         <div className={Styles.imageSection}>
-          <center>
-            {/*--- to make logo image center this center tag is used ---*/}
-            <img src={logo} alt="Logo" className={Styles.logo} />
-          </center>
+          <img src={logo} alt="Logo" className={Styles.logo} />
           <img
             src={illustrator}
             alt="Illustrator"
@@ -87,14 +84,23 @@ const Login = () => {
             onFinish={handleLogin}
             className={Styles.formContainer}
           >
-            <h2 className={Styles.formTitle}>Login</h2>
+            {/* Mobile-only logo */}
+            {isMobile && (
+              <img src={logo} alt="Logo" className={Styles.mobileLogo} />
+            )}
+
+            <h2 className={Styles.formTitle}>Welcome Back</h2>
+            <p className={Styles.formSubtitle}>
+              Sign in to your account to continue
+            </p>
+
             <Form.Item
               name="email"
               rules={[{ required: true, message: "Please input your email!" }]}
             >
               <Input
                 type="email"
-                placeholder="Email"
+                placeholder="Email address"
                 value={email} 
                 onChange={(e) => setEmail(e.target.value)} 
                 autoComplete="username" 
@@ -124,24 +130,24 @@ const Login = () => {
                   message.error("CAPTCHA error. Please try again.");
                 }}
                 size={isMobile ? "normal" : "compact"}
-                theme="light"
+                theme={theme === "dark" ? "dark" : "light"}
               />
             </Form.Item>
-            <Form.Item style={{ textAlign: "center" }}>
+            <Form.Item style={{ marginBottom: 8 }}>
               <Button
                 className={Styles.button_login}
                 htmlType="submit"
                 disabled={loginMutation.isLoading}
                 loading={isLoading}  // Show loading spinner
               >
-                Login
+                Sign In
               </Button>
             </Form.Item>
-            <p style={{ textAlign: "center" }}>
+            <div className={Styles.linkWrapper}>
               <Link to="/forgot-password" className={Styles.link}>
                 Forgot Password?
               </Link>
-            </p>
+            </div>
           </Form>
         </div>
       </div>

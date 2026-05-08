@@ -5,8 +5,10 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Styles from "../styles/auth/AuthForm.module.css";
 import logo from "../assets/Logo.png";
 import illustrator from "../assets/login/Illustrator.svg";
+import useResponsive from "../hooks/useResponsive";
 
 const ResetPassword = () => {
+  const { isMobile } = useResponsive();
   const navigate = useNavigate();
   const location = useLocation();
   const [form] = Form.useForm(); // Create a form instance
@@ -49,9 +51,7 @@ const ResetPassword = () => {
     <div className={Styles.pageWrapper}>
       <div className={Styles.imageFormWrapper}>
         <div className={Styles.imageSection}>
-          <center>
-            <img src={logo} alt="Logo" className={Styles.logo} />
-          </center>
+          <img src={logo} alt="Logo" className={Styles.logo} />
           <img src={illustrator} alt="Illustrator" className={Styles.illustrator} />
         </div>
         <div className={Styles.formWrapper}>
@@ -64,7 +64,15 @@ const ResetPassword = () => {
               email: location.state?.email // Set the initial value for the email field
             }}
           >
+            {/* Mobile-only logo */}
+            {isMobile && (
+              <img src={logo} alt="Logo" className={Styles.mobileLogo} />
+            )}
+
             <h2 className={Styles.formTitle}>Reset Password</h2>
+            <p className={Styles.formSubtitle}>
+              Create a new password for your account
+            </p>
 
             <Form.Item
               name="email"
@@ -86,15 +94,17 @@ const ResetPassword = () => {
               />
             </Form.Item>
 
-            <Button
-              type="link"
-              className={Styles.link}
-              onClick={handleResendOtp}
-              disabled={resendOtpMutation.isLoading}
-              loading={isLoadingSendOtp}
-            >
-              Resend OTP
-            </Button>
+            <div className={Styles.resendWrapper}>
+              <Button
+                type="link"
+                className={Styles.resendBtn}
+                onClick={handleResendOtp}
+                disabled={resendOtpMutation.isLoading}
+                loading={isLoadingSendOtp}
+              >
+                Resend OTP
+              </Button>
+            </div>
 
             <Form.Item
               name="newPassword"
@@ -123,7 +133,7 @@ const ResetPassword = () => {
               />
             </Form.Item>
 
-            <Form.Item style={{ textAlign: "center" }}>
+            <Form.Item style={{ marginBottom: 0 }}>
               <Button
                 className={Styles.button_login}
                 htmlType="submit"

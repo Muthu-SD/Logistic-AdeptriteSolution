@@ -4,10 +4,12 @@ import { useNavigate, Link } from "react-router-dom";
 import Styles from "../styles/auth/AuthForm.module.css";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "../utils/Api";
-import logo from "../assets/Logo.png"; // Import logo
-import illustrator from "../assets/login/Illustrator.svg"; // Import illustration
+import logo from "../assets/Logo.png";
+import illustrator from "../assets/login/Illustrator.svg";
+import useResponsive from "../hooks/useResponsive";
 
 const ForgotPassword = () => {
+  const { isMobile } = useResponsive();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
 
@@ -23,11 +25,6 @@ const ForgotPassword = () => {
   // Manually derive isLoading
   const isLoading = forgotPasswordMutation.status === "loading" || forgotPasswordMutation.status === "pending";
 
-  // Log the derived isLoading value
-  // useEffect(() => {
-  //   console.log("Derived isLoading:", isLoading);
-  // }, [forgotPasswordMutation.status]);
-
   const handleForgotPassword = () => {
     forgotPasswordMutation.mutate();
   };
@@ -37,10 +34,7 @@ const ForgotPassword = () => {
     <div className={Styles.pageWrapper}>
       <div className={Styles.imageFormWrapper}>
         <div className={Styles.imageSection}>
-          <center>
-            {/*--- to make logo image center this center tag is used ---*/}
-            <img src={logo} alt="Logo" className={Styles.logo} />
-          </center>
+          <img src={logo} alt="Logo" className={Styles.logo} />
           <img
             src={illustrator}
             alt="Illustrator"
@@ -53,9 +47,16 @@ const ForgotPassword = () => {
             onFinish={handleForgotPassword}
             className={Styles.formContainer}
           >
-            <h2 className={Styles.formTitle}>
-              Forgot Password
-            </h2>
+            {/* Mobile-only logo */}
+            {isMobile && (
+              <img src={logo} alt="Logo" className={Styles.mobileLogo} />
+            )}
+
+            <h2 className={Styles.formTitle}>Forgot Password</h2>
+            <p className={Styles.formSubtitle}>
+              Enter your email and we&apos;ll send you a verification code
+            </p>
+
             <Form.Item
               name="email"
               rules={[
@@ -64,29 +65,26 @@ const ForgotPassword = () => {
             >
               <Input
                 type="email"
-                placeholder="Email"
+                placeholder="Email address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
             </Form.Item>
 
-            <Form.Item style={{ textAlign: "center" }}>
+            <Form.Item style={{ marginBottom: 8 }}>
               <Button
                 className={Styles.button_login}
                 htmlType="submit"
-                // disabled={isLoading}
                 loading={isLoading}
               >
                 Send OTP
               </Button>
             </Form.Item>
-            <p style={{ textAlign: "center" ,
-              marginTop: "66px"
-              }}>
+            <div className={Styles.linkWrapper}>
               <Link to="/login" className={Styles.link}>
                 Back to Login
               </Link>
-            </p>
+            </div>
           </Form>
         </div>
       </div>
