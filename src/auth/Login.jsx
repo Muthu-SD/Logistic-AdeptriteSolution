@@ -129,7 +129,7 @@ const Login = () => {
                   console.error("Turnstile Error Details:", err);
                   message.error("CAPTCHA error. Please try again.");
                 }}
-                size={isMobile ? "normal" : "compact"}
+                size="normal"
                 theme={theme === "dark" ? "dark" : "light"}
               />
             </Form.Item>

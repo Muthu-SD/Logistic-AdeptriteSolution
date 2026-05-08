@@ -12,6 +12,8 @@ const ResetPassword = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [form] = Form.useForm(); // Create a form instance
+  const resetOtp = Form.useWatch("resetOtp", form);
+  const isOtpValid = /^\d{6}$/.test((resetOtp || "").trim());
 
   const resetPasswordMutation = useMutation({
     mutationFn: (formData) =>
@@ -87,10 +89,17 @@ const ResetPassword = () => {
 
             <Form.Item
               name="resetOtp"
-              rules={[{ required: true, message: "Please enter the OTP!" }]}
+              validateTrigger="onChange"
+              hasFeedback
+              validateStatus={!resetOtp ? "" : isOtpValid ? "success" : "error"}
+              rules={[
+                { required: true, message: "Please enter the OTP!" },
+                { pattern: /^\d{6}$/, message: "OTP must be 6 digits." }
+              ]}
             >
               <Input
                 placeholder="Enter OTP"
+                maxLength={6}
               />
             </Form.Item>
 
@@ -112,6 +121,7 @@ const ResetPassword = () => {
             >
               <Input.Password
                 placeholder="New Password"
+                disabled={!isOtpValid}
               />
             </Form.Item>
 
@@ -130,6 +140,7 @@ const ResetPassword = () => {
             >
               <Input.Password
                 placeholder="Confirm New Password"
+                disabled={!isOtpValid}
               />
             </Form.Item>
 
@@ -138,6 +149,7 @@ const ResetPassword = () => {
                 className={Styles.button_login}
                 htmlType="submit"
                 loading={isLoading}
+                disabled={!isOtpValid}
               >
                 Reset Password
               </Button>
